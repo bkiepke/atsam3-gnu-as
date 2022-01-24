@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./bin/executable.elf",
+            "serverpath" : "/usr/bin/JLinkGDBServerCLExe",
+            "servertype" : "jlink",
+            "device": "ATSAM3S4C",
+            "interface": "jtag",
+            "serialNumber": "28009703",
+            "name": "Debug SAM-ICE",
+            "request": "launch",
+            "type": "cortex-debug",
+            "showDevDebugOutput": true,
+            "runToMain": true
+        }
+    ]
+}

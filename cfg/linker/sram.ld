@@ -1,0 +1,1 @@
+/home/benny/Projekte_lokal/Atmel/xdk-asf-3.49.1/sam/utils/linker_scripts/sam3s/sam3s4/gcc/sram.ld
