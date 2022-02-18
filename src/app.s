@@ -21,24 +21,28 @@ SystemInit:
     @ Setup PLL clocks
     .global     PMC_CKGR_PLLAR_Enable
     bl          PMC_CKGR_PLLAR_Enable
-    .global     PMC_CKGR_PLLBR_Enable
-    bl          PMC_CKGR_PLLBR_Enable
+    @.global     PMC_CKGR_PLLBR_Enable
+    @bl          PMC_CKGR_PLLBR_Enable
 
     @ Setup PCK output
     .global     PMC_PMC_SCER_PCK0_Enable
     bl          PMC_PMC_SCER_PCK0_Enable
-
     .global     PIOA_SwitchTo_PCK0
     bl          PIOA_SwitchTo_PCK0
-
     .global     PMC_PMC_PCK0_OutputClock
     bl          PMC_PMC_PCK0_OutputClock
 
     @ Setup USB clock
-    .global     PMC_PMC_SCER_UDP_Enable
-    bl          PMC_PMC_SCER_UDP_Enable
-@    .global     PMC_PMC_SCDR_UDP_Disable
-@    bl          PMC_PMC_SCDR_UDP_Disable
+    @.global     PMC_PMC_USB_PLLA_Enable
+    @bl          PMC_PMC_USB_PLLA_Enable
+    @.global     PMC_PMC_SCER_UDP_Enable
+    @bl          PMC_PMC_SCER_UDP_Enable
+    @.global     PMC_PMC_SCDR_UDP_Disable
+    @bl          PMC_PMC_SCDR_UDP_Disable
+    .global     PMC_PMC_USB_Clock_Enable
+    bl          PMC_PMC_USB_Clock_Enable
+
+
 
     @ Setup watchdog
 

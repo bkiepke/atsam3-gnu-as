@@ -3,23 +3,18 @@
     .arch armv7-m
     .thumb
 
-    @ TODO Import Macros instead of redefinition
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
 
-    @ Macro to set a value of register (32-bit)
-    .global SetValue
-    .macro SetValue, Register, Value
-    ldr         r0, =\Register                                                  @ Prepare access of register
-    ldr         r1, =\Value                                                     @ Prepare value to write
-    str         r1, [r0]                                                        @ Write value to register
-    .endm
-
-    @ Macro to verify a flag is set
-    .global VerifyFlagSet
-    .macro VerifyFlagSet, Register, Flag
-    ldr         r0, =\Register                                                  @ Prepare access of register
-    ldr         r1, [r0]                                                        @ Read value of register
-    tst         r1, #\Flag                                                      @ Verify flag is set
-    beq         . - 8                                                           @ Wait while flag is cleared
+    @ Macros
+    .macro Macro_ , label, value, flag
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    SetValueWO      PMC_CKGR_MOR, \value
+    VerifyFlagSet   PMC_PMC_SR, \flag
+    pop         { pc }
     .endm
 
 
@@ -82,19 +77,19 @@
     @      : 1 = A clock failure of the main on-chip RC oscillator clock is detected
     @ FOS : 0 = The fault output of the clock failure detector is inactive
     @     : 1 = The fault output of the clock failure detector is active
-    .equ        PMC_PMC_SR_MOSCXTS, 0
-    .equ        PMC_PMC_SR_LOCKA, 1
-    .equ        PMC_PMC_SR_LOCKB, 2
-    .equ        PMC_PMC_SR_MCKRDY, 3
-    .equ        PMC_PMC_SR_OSCSELS, 7
-    .equ        PMC_PMC_SR_PCKRDY0, 8
-    .equ        PMC_PMC_SR_PCKRDY1, 9
-    .equ        PMC_PMC_SR_PCKRDY2, 10
-    .equ        PMC_PMC_SR_MOSCSELS, 16
-    .equ        PMC_PMC_SR_MOSCRCS, 17
-    .equ        PMC_PMC_SR_CFDEV, 18
-    .equ        PMC_PMC_SR_CFDS, 19
-    .equ        PMC_PMC_SR_FOS, 20
+    .equ        PMC_PMC_SR_MOSCXTS, 0x00000001
+    .equ        PMC_PMC_SR_LOCKA, 0x00000002
+    .equ        PMC_PMC_SR_LOCKB, 0x00000004
+    .equ        PMC_PMC_SR_MCKRDY, 0x00000008
+    .equ        PMC_PMC_SR_OSCSELS, 0x00000080
+    .equ        PMC_PMC_SR_PCKRDY0, 0x00000100
+    .equ        PMC_PMC_SR_PCKRDY1, 0x00000200
+    .equ        PMC_PMC_SR_PCKRDY2, 0x00000400
+    .equ        PMC_PMC_SR_MOSCSELS, 0x00010000
+    .equ        PMC_PMC_SR_MOSCRCS, 0x00020000
+    .equ        PMC_PMC_SR_CFDEV, 0x00040000
+    .equ        PMC_PMC_SR_CFDS, 0x00080000
+    .equ        PMC_PMC_SR_FOS, 0x00100000
 
     @ Register CKGR_MOR, read-write
     @ 31 30 29 28 27 26 | 25    | 24      | 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 09 08 | 07 | 06 05 04 | 03       | 02 | 01       | 00
@@ -131,8 +126,8 @@ PMC_CKGR_MOR_MainCrystalEnable:
     .global     PMC_CKGR_MOR_MainCrystalEnable
     .type       PMC_CKGR_MOR_MainCrystalEnable, %function
     push        { lr }
-    SetValue    PMC_CKGR_MOR, ((1 << PMC_CKGR_MOR_MOSCSEL) | (PMC_CKGR_MOR_KEY_VALUE << PMC_CKGR_MOR_KEY) | (PMC_CKGR_MOR_MOSCXTST_VALUE << PMC_CKGR_MOR_MOSCXTST) | (1 << PMC_CKGR_MOR_MOSCXTEN))    
-    VerifyFlagSet   PMC_PMC_SR, (1 << PMC_PMC_SR_MOSCXTS)
+    SetValueWO      PMC_CKGR_MOR, ((1 << PMC_CKGR_MOR_MOSCSEL) | (PMC_CKGR_MOR_KEY_VALUE << PMC_CKGR_MOR_KEY) | (PMC_CKGR_MOR_MOSCXTST_VALUE << PMC_CKGR_MOR_MOSCXTST) | (1 << PMC_CKGR_MOR_MOSCXTEN))    
+    VerifyFlagSet   PMC_PMC_SR, PMC_PMC_SR_MOSCXTS
     pop         { pc }
 
     @ Register CKGR_PLLxR, read-write
@@ -164,16 +159,16 @@ PMC_CKGR_PLLAR_Enable:
     .global     PMC_CKGR_PLLAR_Enable
     .type       PMC_CKGR_PLLAR_Enable, %function
     push        { lr }
-    SetValue    PMC_CKGR_PLLAR, ((1 << PMC_CKGR_PLLAR_ONE) | (PMC_CKGR_PLLAR_MULA_VALUE << PMC_CKGR_PLLxR_MULx) | (PMC_CKGR_PLLAR_PLLACOUNT_VALUE << PMC_CKGR_PLLxR_PLLxCOUNT) | (PMC_CKGR_PLLAR_DIVA_VALUE << PMC_CKGR_PLLxR_DIVx))
-    VerifyFlagSet PMC_PMC_SR, (1 << PMC_PMC_SR_LOCKA)
+    SetValueRW      PMC_CKGR_PLLAR, ((1 << PMC_CKGR_PLLAR_ONE) | (PMC_CKGR_PLLAR_MULA_VALUE << PMC_CKGR_PLLxR_MULx) | (PMC_CKGR_PLLAR_PLLACOUNT_VALUE << PMC_CKGR_PLLxR_PLLxCOUNT) | (PMC_CKGR_PLLAR_DIVA_VALUE << PMC_CKGR_PLLxR_DIVx))
+    VerifyFlagSet   PMC_PMC_SR, PMC_PMC_SR_LOCKA
     pop         { pc }
 
 PMC_CKGR_PLLBR_Enable:
     .global     PMC_CKGR_PLLBR_Enable
     .type       PMC_CKGR_PLLBR_Enable, %function
     push        { lr }
-    SetValue    PMC_CKGR_PLLBR, ((PMC_CKGR_PLLBR_MULB_VALUE << PMC_CKGR_PLLxR_MULx) | (PMC_CKGR_PLLBR_PLLBCOUNT_VALUE << PMC_CKGR_PLLxR_PLLxCOUNT) | (PMC_CKGR_PLLBR_DIVB_VALUE << PMC_CKGR_PLLxR_DIVx))
-    VerifyFlagSet   PMC_PMC_SR, (1 << PMC_PMC_SR_LOCKB)
+    SetValueRW      PMC_CKGR_PLLBR, ((PMC_CKGR_PLLBR_MULB_VALUE << PMC_CKGR_PLLxR_MULx) | (PMC_CKGR_PLLBR_PLLBCOUNT_VALUE << PMC_CKGR_PLLxR_PLLxCOUNT) | (PMC_CKGR_PLLBR_DIVB_VALUE << PMC_CKGR_PLLxR_DIVx))
+    VerifyFlagSet   PMC_PMC_SR, PMC_PMC_SR_LOCKB
     pop         { pc }
 
     @ Register PMC_PCKx
@@ -190,10 +185,10 @@ PMC_CKGR_PLLBR_Enable:
     .equ        PMC_PMC_PCKx_CSS, 0
     .equ        PMC_PMC_PCKx_PRES, 4    
 
-    @.equ        PMC_PMC_PCKx_CSS_VALUE, 0                                       @ SLCK
-    @.equ        PMC_PMC_PCKx_CSS_VALUE, 1                                       @ MAINCK
-    @.equ        PMC_PMC_PCKx_CSS_VALUE, 2                                       @ PLL A clock
-    .equ        PMC_PMC_PCKx_CSS_VALUE, 3                                       @ PLL B clock
+    @.equ        PMC_PMC_PCKx_CSS_VALUE, 0                                       @ SLCK, 32kHz
+    @.equ        PMC_PMC_PCKx_CSS_VALUE, 1                                       @ MAINCK, 12MHz
+    .equ        PMC_PMC_PCKx_CSS_VALUE, 2                                       @ PLL A clock, 96MHz
+    @.equ        PMC_PMC_PCKx_CSS_VALUE, 3                                       @ PLL B clock, 96MHz
     @.equ        PMC_PMC_PCKx_CSS_VALUE, 4                                       @ MCK clock
     
     @
@@ -203,14 +198,14 @@ PMC_PMC_PCK0_OutputClock:
     .global     PMC_PMC_PCK0_OutputClock
     .type       PMC_PMC_PCK0_OutputClock, %function
     push        { lr }
-    SetValue    PMC_PMC_PCK0, ((PMC_PMC_PCKx_PRES_VALUE << PMC_PMC_PCKx_PRES) | (PMC_PMC_PCKx_CSS_VALUE << PMC_PMC_PCKx_CSS))
+    SetValueWO  PMC_PMC_PCK0, ((PMC_PMC_PCKx_PRES_VALUE << PMC_PMC_PCKx_PRES) | (PMC_PMC_PCKx_CSS_VALUE << PMC_PMC_PCKx_CSS))
     pop         { pc }
 
     @ Register PMC_SCER, write-only
     @ Register PMC_SCDR, write-only
     @ Register PMC_SCSR, read-only, note bit 00 is always 1!
-    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 | 10   09   08   | 07  | 06 05 04 03 02 01 00
-    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | PCK2 PCK1 PCK0 | UDP | -  -  -  -  -  -  -
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 | 10   | 09   | 08   | 07  | 06 05 04 03 02 01 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | PCK2 | PCK1 | PCK0 | UDP | -  -  -  -  -  -  -
     @
     @ UDP : 0 = No effect
     @     : 1 = Enables the 48 MHz clock (UDPCK) of the USB Device Port
@@ -218,42 +213,72 @@ PMC_PMC_PCK0_OutputClock:
     @ PCKx : 0 = No effect
     @      : 1 = Enables the corresponding Programmable Clock Output
     @
-    .equ        PMC_PMC_SCxR_UDP, 7
-    .equ        PMC_PMC_SCxR_PCK0, 8
-    .equ        PMC_PMC_SCxR_PCK1, 9
-    .equ        PMC_PMC_SCxR_PCK2, 10
+    .equ        PMC_PMC_SCxR_UDP, 0x00000080
+    .equ        PMC_PMC_SCxR_PCK0, 0x00000100
+    .equ        PMC_PMC_SCxR_PCK1, 0x00000200
+    .equ        PMC_PMC_SCxR_PCK2, 0x00000400
 
-PMC_PMC_SCER_UDP_Enable:
-    .global     PMC_PMC_SCER_UDP_Enable
-    .type       PMC_PMC_SCER_UDP_Enable, %function
-    push        { lr }
-    SetValue    PMC_PMC_SCER, (1 << PMC_PMC_SCxR_UDP)
-    pop         { pc }
+@PMC_PMC_SCER_UDP_Enable:
+@    .global     PMC_PMC_SCER_UDP_Enable
+@    .type       PMC_PMC_SCER_UDP_Enable, %function
+@    push        { lr }
+@    SetValueWO  PMC_PMC_SCER, PMC_PMC_SCxR_UDP
+@    pop         { pc }
 
-PMC_PMC_SCDR_UDP_Disable:
-    .global     PMC_PMC_SCDR_UDP_Disable
-    .type       PMC_PMC_SCDR_UDP_Disable, %function 
-    push        { lr }
-    SetValue    PMC_PMC_SCDR, (1 << PMC_PMC_SCxR_UDP)
-    pop         { pc }
+@PMC_PMC_SCDR_UDP_Disable:
+@    .global     PMC_PMC_SCDR_UDP_Disable
+@    .type       PMC_PMC_SCDR_UDP_Disable, %function 
+@    push        { lr }
+@    SetValueWO  PMC_PMC_SCDR, PMC_PMC_SCxR_UDP
+@    pop         { pc }
 
 PMC_PMC_SCER_PCK0_Enable:
     .global     PMC_PMC_SCER_PCK0_Enable
     .type       PMC_PMC_SCER_PCK0_Enable, %function
     push        { lr }
-    SetValue    PMC_PMC_SCER, (1 << PMC_PMC_SCxR_PCK0)
+    SetValueWO  PMC_PMC_SCER, PMC_PMC_SCxR_PCK0
     pop         { pc }
 
 PMC_PMC_SCDR_PCK0_Disable:
     .global     PMC_PMC_SCDR_PCK0_Disable
     .type       PMC_PMC_SCDR_PCK0_Disable, %function
     push        { lr }
-    SetValue    PMC_PMC_SCDR, (1 << PMC_PMC_SCxR_PCK0)
+    SetValueWO  PMC_PMC_SCDR, PMC_PMC_SCxR_PCK0
     pop         { pc }
+
+    @ Register PMC_USB, read-write
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 | 11 10 09 08 | 07 06 05 04 03 02 01 | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | USBDIV      | -  -  -  -  -  -  -  | USBS
+    @
+    @ USBS : 0 = USB Clock Input is PLLA
+    @      : 1 = USB Clock Input is PLLB
+    @ USBDIV : USB Clock is Input clock divided by USBDIV+1
+    @
+    .equ        PMC_PMC_USB_USBS, 0x00000001
+    .equ        PMC_PMC_USB_USBDIV, 8
+
+@PMC_PMC_USB_PLLA_Enable:
+@    .global     PMC_PMC_USB_PLLA_Enable
+@    .type       PMC_PMC_USB_PLLA_Enable, %function
+@    push        { lr }
+@    SetValueWO  PMC_PMC_USB, (1 << PMC_PMC_USB_USBDIV) @ Select PLLA with 96MHz, will provide 48MHZ
+@    pop         { pc }
+
+
+PMC_PMC_USB_Clock_Enable:
+    .global     PMC_PMC_USB_Clock_Enable
+    .type       PMC_PMC_USB_Clock_Enable, %function
+    push        { lr }
+    SetValueWO  PMC_PMC_USB, (1 << PMC_PMC_USB_USBDIV)                          @ Select PLLA with 96MHz, will provide 48MHZ
+    SetValueWO  PMC_PMC_SCER, PMC_PMC_SCxR_UDP                                  @ Enable USBCK
+    SetValueWO  PMC_PMC_PCER1, (1 << (PERIPHERAL_UDP - 32))                     @ Enable Clock for peripheral
+    pop         { pc }
+
+
 
 @ /* USB Clock uses PLLB */
 @ PMC->PMC_USB = PMC_USB_USBDIV(1)    /* /2   */
-@              | PMC_USB_USBS;        /* PLLB */
+@              | PMC_USB_USBS@        /* PLLB */
 
 
 
@@ -271,7 +296,7 @@ PMC_Write_Protect_Enable:
     .global     PMC_Write_Protect_Enable
     .type       PMC_Write_Protect_Enable, %function
     push        { lr }
-    SetValue    PMC_PMC_WPMR, PMC_WPMR_ENABLE
+    SetValueWO  PMC_PMC_WPMR, PMC_WPMR_ENABLE
     pop         { pc }
     
 
@@ -279,7 +304,7 @@ PMC_Write_Protect_Disable:
     .global     PMC_Write_Protect_Disable
     .type       PMC_Write_Protect_Disable, %function
     push        { lr }
-    SetValue    PMC_PMC_WPMR, PMC_WPMR_DISABLE
+    SetValueWO  PMC_PMC_WPMR, PMC_WPMR_DISABLE
     pop         { pc }
 
     .end
@@ -290,5 +315,5 @@ PMC_Write_Protect_Disable:
 
 
 @ USB
-@ PMC->PMC_PCER0 = 1 << dwId ; // Enable peripheral clock
-@ REG_PMC_SCER = PMC_SCER_UDP; // Enable USB clock
+@ PMC->PMC_PCER0 = 1 << dwId @ // Enable peripheral clock
+@ REG_PMC_SCER = PMC_SCER_UDP@ // Enable USB clock

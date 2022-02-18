@@ -3,45 +3,84 @@
     .arch armv7-m
     .thumb
 
-    @ TODO Import Macros instead of redefinition
+    @ Import Macros
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
 
-    @ Macro to set a value of write-only register (32-bit)
-    .global SetValueWO
-    .macro SetValueWO, Register, Value
-    ldr         r0, =\Register                                                  @ Prepare access to register
-    ldr         r1, =\Value                                                     @ Prepare value to write
-    str         r1, [r0]                                                        @ Write value to register
+    @ PIO A
+
+    @ Macro for switching to peripheral function A
+    .macro  Macro_PIOA_SwitchTo_A, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    ClearValueRW    PIOA_PIO_ABCDSR1, \pin
+    ClearValueRW    PIOA_PIO_ABCDSR2, \pin
+    SetValueWO      PIOA_PIO_PDR, \pin
+    pop         { pc }
     .endm
 
-    @ Macro to set a value of read-write register (32-bit)
-    .global SetValueWR
-    .macro SetValueWR, Register, Value
-    ldr         r0, =\Register                                                  @ Prepare access to register
-    ldr         r1, [r0]                                                        @ Get current value
-    ldr         r2, =\Value                                                     @ Set value
-    orr         r1, r2   
-    str         r1, [r0]                                                        @ Write value to register
+    @ Macro for switching to peripheral function B
+    .macro  Macro_PIOA_SwitchTo_B, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    SetValueRW      PIOA_PIO_ABCDSR1, \pin
+    ClearValueRW    PIOA_PIO_ABCDSR2, \pin
+    SetValueWO      PIOA_PIO_PDR, \pin
+    pop         { pc }
     .endm
 
-    @ Macro to clear a value of read-write register (32-bit)
-    .global ClearValueWR
-    .macro ClearValueWR, Register, Value
-    ldr         r0, =\Register                                                  @ Prepare access to register
-    ldr         r1, [r0]                                                        @ Get current value
-    ldr         r2, =(~\Value)                                                  @ Set value
-    and         r1, r2
-    str         r1, [r0]                                                        @ Write value to register
-    .endm
-    
-    @ Macro to verify a flag is set
-    .global VerifyFlagSet
-    .macro VerifyFlagSet, Register, Flag
-    ldr         r0, =\Register                                                  @ Prepare access of register
-    ldr         r1, [r0]                                                        @ Read value of register
-    tst         r1, #\Flag                                                      @ Verify flag is set
-    beq         . - 8                                                           @ Wait while flag is cleared
+    @ Macro for switching to peripheral function C
+    .macro  Macro_PIOA_SwitchTo_C, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    ClearValueRW    PIOA_PIO_ABCDSR1, \pin
+    SetValueRW      PIOA_PIO_ABCDSR2, \pin
+    SetValueWO      PIOA_PIO_PDR, \pin
+    pop         { pc }
     .endm
 
+    @ PIO B
+
+    @ Macro for switching to peripheral function A
+    .macro  Macro_PIOB_SwitchTo_A, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    ClearValueRW    PIOB_PIO_ABCDSR1, \pin
+    ClearValueRW    PIOB_PIO_ABCDSR2, \pin
+    SetValueWO      PIOB_PIO_PDR, \pin
+    pop         { pc }
+    .endm
+
+    @ Macro for switching to peripheral function B
+    .macro  Macro_PIOB_SwitchTo_B, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    SetValueRW      PIOB_PIO_ABCDSR1, \pin
+    ClearValueRW    PIOB_PIO_ABCDSR2, \pin
+    SetValueWO      PIOB_PIO_PDR, \pin
+    pop         { pc }
+    .endm
+
+    @ Macro for switching to peripheral function C
+    .macro  Macro_PIOB_SwitchTo_C, label, pin
+\label:
+    .global     \label
+    .type       \label, %function
+    push        { lr }
+    ClearValueRW    PIOB_PIO_ABCDSR1, \pin
+    SetValueRW      PIOB_PIO_ABCDSR2, \pin
+    SetValueWO      PIOB_PIO_PDR, \pin
+    pop         { pc }
+    .endm
 
 @    .section .text, "ax"
     
@@ -285,898 +324,146 @@
     @
 
     @ PIOA Peripheral Options
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH0, PIOx_P00
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA, PIOx_P00
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A17, PIOx_P00
+    
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH1, PIOx_P01
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB0, PIOx_P01
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A18, PIOx_P01
 
-PIOA_SwitchTo_PWMH0:
-    .global     PIOA_SwitchTo_PWMH0
-    .type       PIOA_SwitchTo_PWMH0, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P00
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P00
-    SetValueWO      PIOA_PIO_PDR, PIOx_P00
-    pop         { pc }
-
-PIOA_SwitchTo_TIOA:
-    .global     PIOA_SwitchTo_TIOA
-    .type       PIOA_SwitchTo_TIOA, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P00
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P00
-    SetValueWO      PIOA_PIO_PDR, PIOx_P00
-    pop         { pc }
-
-PIOA_SwitchTo_A17:
-    .global     PIOA_SwitchTo_A17
-    .type       PIOA_SwitchTo_A17, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P00
-    SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P00
-    SetValueWO      PIOA_PIO_PDR, PIOx_P00
-    pop         { pc }
-
-PIOA_SwitchTo_PWMH1:
-    .global     PIOA_SwitchTo_PWMH1
-    .type       PIOA_SwitchTo_PWMH1, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P01
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P01
-    SetValueWO      PIOA_PIO_PDR, PIOx_P01
-    pop         { pc }
-
-PIOA_SwitchTo_TIOB0:
-    .global     PIOA_SwitchTo_TIOB0
-    .type       PIOA_SwitchTo_TIOB0, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P01
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P01
-    SetValueWO      PIOA_PIO_PDR, PIOx_P01
-    pop         { pc }
-
-PIOA_SwitchTo_A18:    
-    .global     PIOA_SwitchTo_A17
-    .type       PIOA_SwitchTo_A17, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P01
-    SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P01
-    SetValueWO      PIOA_PIO_PDR, PIOx_P01    
-    pop         { pc }
-
-PIOA_SwitchTo_PWMH2:
-    .global     PIOA_SwitchTo_PWMH2
-    .type       PIOA_SwitchTo_PWMH2, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P02
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P02
-    SetValueWO      PIOA_PIO_PDR, PIOx_P02
-    pop         { pc }
-
-PIOA_SwitchTo_SCK0:
-    .global     PIOA_SwitchTo_SCK0
-    .type       PIOA_SwitchTo_SCK0, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P02
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P02
-    SetValueWO      PIOA_PIO_PDR, PIOx_P02
-    pop         { pc }
-
-PIOA_SwitchTo_DATRG:
-    .global     PIOA_SwitchTo_DATRG
-    .type       PIOA_SwitchTo_DATRG, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P02
-    SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P02
-    SetValueWO      PIOA_PIO_PDR, PIOx_P02
-    pop         { pc }    
-
-PIOA_SwitchTo_TWD0:
-    .global     PIOA_SwitchTo_TWD0
-    .type       PIOA_SwitchTo_TWD0, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P03
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P03
-    SetValueWO      PIOA_PIO_PDR, PIOx_P03
-    pop         { pc }
-
-PIOA_SwitchTo_NPCS3:    
-    .global     PIOA_SwitchTo_NPCS3
-    .type       PIOA_SwitchTo_NPCS3, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P03
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P03
-    SetValueWO      PIOA_PIO_PDR, PIOx_P03
-    pop         { pc }
-
-PIOA_SwitchTo_TWCK0:
-    .global     PIOA_SwitchTo_TWCK0
-    .type       PIOA_SwitchTo_TWCK0, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P04
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P04
-    SetValueWO      PIOA_PIO_PDR, PIOx_P04
-    pop         { pc }
-
-PIOA_SwitchTo_TCLK0:    
-    .global     PIOA_SwitchTo_TCLK0
-    .type       PIOA_SwitchTo_TCLK0, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P04
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P04
-    SetValueWO      PIOA_PIO_PDR, PIOx_P04
-    pop         { pc }
-
-PIOA_SwitchTo_RXD0:
-    .global     PIOA_SwitchTo_RXD0
-    .type       PIOA_SwitchTo_RXD0, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P05
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P05
-    SetValueWO      PIOA_PIO_PDR, PIOx_P05
-    pop         { pc }
-
-PIOA_SwitchTo_NPCS3_1:    
-    .global     PIOA_SwitchTo_NPCS3_1
-    .type       PIOA_SwitchTo_NPCS3_1, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P05
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P05
-    SetValueWO      PIOA_PIO_PDR, PIOx_P05
-    pop         { pc }
-
-PIOA_SwitchTo_TXD0:
-    .global     PIOA_SwitchTo_TXD0
-    .type       PIOA_SwitchTo_TXD0, %function
-    push        { lr }
-    ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P06
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P06
-    SetValueWO      PIOA_PIO_PDR, PIOx_P06
-    pop         { pc }
-
-PIOA_SwitchTo_PCK0:
-    .global     PIOA_SwitchTo_PCK0
-    .type       PIOA_SwitchTo_PCK0, %function
-    push        { lr }
-    SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P06
-    ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P06
-    SetValueWO      PIOA_PIO_PDR, PIOx_P06
-    pop         { pc }
-
-@ PIOA_SwitchTo_RTS0:
-@     .global     PIOA_SwitchTo_RTS0
-@     .type       PIOA_SwitchTo_RTS0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P07
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P07
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P07
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH3:
-@     .global     PIOA_SwitchTo_PWMH3
-@     .type       PIOA_SwitchTo_PWMH3, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P07
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P07
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P07
-@     pop         { pc }    
-
-@ PIOA_SwitchTo_CTS0:
-@     .global     PIOA_SwitchTo_CTS0
-@     .type       PIOA_SwitchTo_CTS0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P08
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P08
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P08
-@     pop         { pc }
-
-@ PIOA_SwitchTo_ADTRG:
-@     .global     PIOA_SwitchTo_ADTRG
-@     .type       PIOA_SwitchTo_ADTRG, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P08
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P08
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P08
-@     pop         { pc }    
-
-@ PIOA_SwitchTo_URXD0:
-@     .global     PIOA_SwitchTo_URXD0
-@     .type       PIOA_SwitchTo_URXD0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P09
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P09
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P09
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NPCS1:
-@     .global     PIOA_SwitchTo_NPCS1
-@     .type       PIOA_SwitchTo_NPCS1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P09
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P09
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P09
-@     pop         { pc }    
-
-@ PIOA_SwitchTo_PWMFI0: 
-@     .global     PIOA_SwitchTo_PWMFI0
-@     .type       PIOA_SwitchTo_PWMFI0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P09
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P09
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P09
-@     pop         { pc }   
-
-@ PIOA_SwitchTo_UTXD0:
-@     .global     PIOA_SwitchTo_UTXD0
-@     .type       PIOA_SwitchTo_UTXD0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P10
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P10
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P10
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NPCS2:
-@     .global     PIOA_SwitchTo_NPCS2
-@     .type       PIOA_SwitchTo_NPCS2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P10
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P10
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P10
-@     pop         { pc }    
-
-@ PIOA_SwitchTo_NPCS0:
-@     .global     PIOA_SwitchTo_NPCS0
-@     .type       PIOA_SwitchTo_NPCS0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P11
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P11
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P11
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH0_1: 
-@     .global     PIOA_SwitchTo_PWMH0_1
-@     .type       PIOA_SwitchTo_PWMH0_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P11
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P11
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P11
-@     pop         { pc }   
-
-@ PIOA_SwitchTo_MISO:
-@     .global     PIOA_SwitchTo_MISO
-@     .type       PIOA_SwitchTo_MISO, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P12
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P12
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P12
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH1_1:
-@     .global     PIOA_SwitchTo_PWMH1_1
-@     .type       PIOA_SwitchTo_PWMH1_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P12
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P12
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P12
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MOSI:
-@     .global     PIOA_SwitchTo_MOSI
-@     .type       PIOA_SwitchTo_MOSI, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P13
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P13
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P13
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH2_1:
-@     .global     PIOA_SwitchTo_PWMH2_1
-@     .type       PIOA_SwitchTo_PWMH2_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P13
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P13
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P13
-@     pop         { pc }
-
-@ PIOA_SwitchTo_SPCK:
-@     .global     PIOA_SwitchTo_SPCK
-@     .type       PIOA_SwitchTo_SPCK, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P14
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P14
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P14
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH3_1:  
-@     .global     PIOA_SwitchTo_PWMH3_1
-@     .type       PIOA_SwitchTo_PWMH3_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P14
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P14
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P14
-@     pop         { pc }  
-
-@ PIOA_SwitchTo_TF:
-@     .global     PIOA_SwitchTo_TF
-@     .type       PIOA_SwitchTo_TF, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P15
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P15
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P15
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TIOA1:    
-@     .global     PIOA_SwitchTo_TIOA1
-@     .type       PIOA_SwitchTo_TIOA1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P15
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P15
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P15
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWML3:
-@     .global     PIOA_SwitchTo_PWML3
-@     .type       PIOA_SwitchTo_PWML3, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P15
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P15
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P15
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TK:
-@     .global     PIOA_SwitchTo_TK
-@     .type       PIOA_SwitchTo_TK, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P16
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P16
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P16
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TIOB1:
-@     .global     PIOA_SwitchTo_TIOB1
-@     .type       PIOA_SwitchTo_TIOB1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P16
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P16
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P16
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWML2:
-@     .global     PIOA_SwitchTo_PWML2
-@     .type       PIOA_SwitchTo_PWML2, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P16
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P16
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P16
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TD:
-@     .global     PIOA_SwitchTo_TD
-@     .type       PIOA_SwitchTo_TD, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P17
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P17
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P17
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PCK1:
-@     .global     PIOA_SwitchTo_PCK1
-@     .type       PIOA_SwitchTo_PCK1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P17
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P17
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P17
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH3_2:
-@     .global     PIOA_SwitchTo_PWMH3_2
-@     .type       PIOA_SwitchTo_PWMH3_2, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P17
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P17
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P17
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RD:
-@     .global     PIOA_SwitchTo_RD
-@     .type       PIOA_SwitchTo_RD, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P18
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P18
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P18
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PCK2:
-@     .global     PIOA_SwitchTo_PCK2
-@     .type       PIOA_SwitchTo_PCK2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P18
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P18
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P18
-@     pop         { pc }
-
-@ PIOA_SwitchTo_A14:
-@     .global     PIOA_SwitchTo_A14
-@     .type       PIOA_SwitchTo_A14, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P18
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P18
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P18
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RK:
-@     .global     PIOA_SwitchTo_RK
-@     .type       PIOA_SwitchTo_RK, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P19
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P19
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P19
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWML0:
-@     .global     PIOA_SwitchTo_PWML0
-@     .type       PIOA_SwitchTo_PWML0, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P19
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P19
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P19
-@     pop         { pc }
-
-@ PIOA_SwitchTo_A15:
-@     .global     PIOA_SwitchTo_A15
-@     .type       PIOA_SwitchTo_A15, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P19
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P19
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P19
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RF:
-@     .global     PIOA_SwitchTo_RF
-@     .type       PIOA_SwitchTo_RF, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P20
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P20
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P20
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWML1:
-@     .global     PIOA_SwitchTo_PWML1
-@     .type       PIOA_SwitchTo_PWML1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P20
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P20
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P20
-@     pop         { pc }
-
-@ PIOA_SwitchTo_A16:
-@     .global     PIOA_SwitchTo_A16
-@     .type       PIOA_SwitchTo_A16, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P20
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P20
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P20
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RXD1:
-@     .global     PIOA_SwitchTo_RXD1
-@     .type       PIOA_SwitchTo_RXD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P21
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P21
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P21
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PCK1_1:
-@     .global     PIOA_SwitchTo_PCK1_1
-@     .type       PIOA_SwitchTo_PCK1_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P21
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P21
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P21
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TXD1:
-@     .global     PIOA_SwitchTo_TXD1
-@     .type       PIOA_SwitchTo_TXD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P22
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P22
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P22
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NPCS3_2:
-@     .global     PIOA_SwitchTo_NPCS3_2
-@     .type       PIOA_SwitchTo_NPCS3_2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P22
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P22
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P22
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NCS2:
-@     .global     PIOA_SwitchTo_NCS2
-@     .type       PIOA_SwitchTo_NCS2, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P22
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P22
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P22
-@     pop         { pc }
-
-@ PIOA_SwitchTo_SCK1:
-@     .global     PIOA_SwitchTo_SCK1
-@     .type       PIOA_SwitchTo_SCK1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P23
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P23
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P23
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH0_2:
-@     .global     PIOA_SwitchTo_PWMH0_2
-@     .type       PIOA_SwitchTo_PWMH0_2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P23
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P23
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P23
-@     pop         { pc }
-
-@ PIOA_SwitchTo_A19:
-@     .global     PIOA_SwitchTo_A19
-@     .type       PIOA_SwitchTo_A19, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P23
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P23
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P23
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RTS1:
-@     .global     PIOA_SwitchTo_RTS1
-@     .type       PIOA_SwitchTo_RTS1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P24
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P24
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P24
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH1_2:
-@     .global     PIOA_SwitchTo_PWMH1_2
-@     .type       PIOA_SwitchTo_PWMH1_2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P24
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P24
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P24
-@     pop         { pc }
-
-@ PIOA_SwitchTo_A20:
-@     .global     PIOA_SwitchTo_A20
-@     .type       PIOA_SwitchTo_A20, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P24
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P24
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P24
-@     pop         { pc }
-
-@ PIOA_SwitchTo_CTS1:
-@     .global     PIOA_SwitchTo_CTS1
-@     .type       PIOA_SwitchTo_CTS1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P25
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P25
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P25
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWMH2_2:
-@     .global     PIOA_SwitchTo_PWMH2_2
-@     .type       PIOA_SwitchTo_PWMH2_2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P25
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P25
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P25
-@     pop         { pc }
-
-@ PIOA_SwitchTo_23:
-@     .global     PIOA_SwitchTo_A23
-@     .type       PIOA_SwitchTo_A23, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P25
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P25
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P25
-@     pop         { pc }
-
-@ PIOA_SwitchTo_DCD1:
-@     .global     PIOA_SwitchTo_DCD1
-@     .type       PIOA_SwitchTo_DCD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P26
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P26
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P26
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TIOA2:
-@     .global     PIOA_SwitchTo_TIOA2
-@     .type       PIOA_SwitchTo_TIOA2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P26
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P26
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P26
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCDA2:
-@     .global     PIOA_SwitchTo_MCDA2
-@     .type       PIOA_SwitchTo_MCDA2, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P26
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P26
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P26
-@     pop         { pc }
-
-@ PIOA_SwitchTo_DTR1:
-@     .global     PIOA_SwitchTo_DTR1
-@     .type       PIOA_SwitchTo_DTR1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P27
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P27
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P27
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TIOB2:
-@     .global     PIOA_SwitchTo_TIOB2
-@     .type       PIOA_SwitchTo_TIOB2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P27
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P27
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P27
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCDA3:
-@     .global     PIOA_SwitchTo_MCDA3
-@     .type       PIOA_SwitchTo_MCDA3, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P27
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P27
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P27
-@     pop         { pc }
-
-@ PIOA_SwitchTo_DSR1:
-@     .global     PIOA_SwitchTo_DSR1
-@     .type       PIOA_SwitchTo_DSR1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P28
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P28
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P28
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TCLK1:
-@     .global     PIOA_SwitchTo_TCLK1
-@     .type       PIOA_SwitchTo_TCLK1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P28
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P28
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P28
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCCDA:
-@     .global     PIOA_SwitchTo_MCCDA
-@     .type       PIOA_SwitchTo_MCCDA, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P28
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P28
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P28
-@     pop         { pc }
-
-@ PIOA_SwitchTo_RI1:
-@     .global     PIOA_SwitchTo_RI1
-@     .type       PIOA_SwitchTo_RI1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P29
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P29
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P29
-@     pop         { pc }
-
-@ PIOA_SwitchTo_TCLK2:
-@     .global     PIOA_SwitchTo_TCLK2
-@     .type       PIOA_SwitchTo_TCLK2, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P29
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P29
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P29
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCCK:
-@     .global     PIOA_SwitchTo_MCCK
-@     .type       PIOA_SwitchTo_MCCK, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P29
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P29
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P29
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PWML2_1:
-@     .global     PIOA_SwitchTo_PWML2_1
-@     .type       PIOA_SwitchTo_PWML2_1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P30
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P30
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P30
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NPCS2_1:
-@     .global     PIOA_SwitchTo_NPCS2_1
-@     .type       PIOA_SwitchTo_NPCS2_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P30
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P30
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P30
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCDA0:
-@     .global     PIOA_SwitchTo_MCDA0
-@     .type       PIOA_SwitchTo_MCDA0, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P30
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P30
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P30
-@     pop         { pc }
-
-@ PIOA_SwitchTo_NPCS1_1:
-@     .global     PIOA_SwitchTo_NPCS1_1
-@     .type       PIOA_SwitchTo_NPCS1_1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P31
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P31
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P31
-@     pop         { pc }
-
-@ PIOA_SwitchTo_PCK2_1:
-@     .global     PIOA_SwitchTo_PCK2_1
-@     .type       PIOA_SwitchTo_PCK2_1, %function
-@     push        { lr }
-@     SetValueWR      PIOA_PIO_ABCDSR1, PIOx_P31
-@     ClearValueWR    PIOA_PIO_ABCDSR2, PIOx_P31
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P31
-@     pop         { pc }
-
-@ PIOA_SwitchTo_MCDA1:
-@     .global     PIOA_SwitchTo_MCDA1
-@     .type       PIOA_SwitchTo_MCDA1, %function
-@     push        { lr }
-@     ClearValueWR    PIOA_PIO_ABCDSR1, PIOx_P31
-@     SetValueWR      PIOA_PIO_ABCDSR2, PIOx_P31
-@     SetValueWO      PIOA_PIO_PDR, PIOx_P31
-@     pop         { pc }
-
-@     @ PIOB Peripheral Options
-
-@ PIOB_SwitchTo_PWMH0:
-@     .global     PIOB_SwitchTo_PWMH0
-@     .type       PIOB_SwitchTo_PWMH0, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P00
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P00
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P00
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWMH1:
-@     .global     PIOB_SwitchTo_PWMH1
-@     .type       PIOB_SwitchTo_PWMH1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P01
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P01
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P01
-@     pop         { pc }
-
-@ PIOB_SwitchTo_URXD1:
-@     .global     PIOB_SwitchTo_URXD1
-@     .type       PIOB_SwitchTo_URXD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P02
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P02
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P02
-@     pop         { pc }
-
-@ PIOB_SwitchTo_NPCS2:
-@     .global     PIOB_SwitchTo_NPCS2
-@     .type       PIOB_SwitchTo_NPCS2, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P02
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P02
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P02
-@     pop         { pc }
-
-@ PIOB_SwitchTo_UTXD1:
-@     .global     PIOB_SwitchTo_UTXD1
-@     .type       PIOB_SwitchTo_UTXD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P03
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P03
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P03
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PCK2:
-@     .global     PIOB_SwitchTo_PCK2
-@     .type       PIOB_SwitchTo_PCK2, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P03
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P03
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P03
-@     pop         { pc }
-
-@ PIOB_SwitchTo_TWD1:
-@     .global     PIOB_SwitchTo_TWD1
-@     .type       PIOB_SwitchTo_TWD1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P04
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P04
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P04
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWMH2:
-@     .global     PIOB_SwitchTo_PWMH2
-@     .type       PIOB_SwitchTo_PWMH2, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P04
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P04
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P04
-@     pop         { pc }
-
-@ PIOB_SwitchTo_TWCK1:
-@     .global     PIOB_SwitchTo_TWCK1
-@     .type       PIOB_SwitchTo_TWCK1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P05
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P05
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P05
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWML0:
-@     .global     PIOB_SwitchTo_PWML0
-@     .type       PIOB_SwitchTo_PWML0, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P05
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P05
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P05    
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWML1:
-@     .global     PIOB_SwitchTo_PWML1
-@     .type       PIOB_SwitchTo_PWML1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P12
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P12
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P12    
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWML2:
-@     .global     PIOB_SwitchTo_PWML2
-@     .type       PIOB_SwitchTo_PWML2, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P13
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P13
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P13    
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PCK0:
-@     .global     PIOB_SwitchTo_PCK0
-@     .type       PIOB_SwitchTo_PCK0, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P13
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P13
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P13    
-@     pop         { pc }
-
-@ PIOB_SwitchTo_NPCS1:
-@     .global     PIOB_SwitchTo_NPCS1
-@     .type       PIOB_SwitchTo_NPCS1, %function
-@     push        { lr }
-@     ClearValueWR    PIOB_PIO_ABCDSR1, PIOx_P14
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P14
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P14    
-@     pop         { pc }
-
-@ PIOB_SwitchTo_PWMH3:
-@     .global     PIOB_SwitchTo_PWMH3
-@     .type       PIOB_SwitchTo_PWMH3, %function
-@     push        { lr }
-@     SetValueWR      PIOB_PIO_ABCDSR1, PIOx_P14
-@     ClearValueWR    PIOB_PIO_ABCDSR2, PIOx_P14
-@     SetValueWO      PIOB_PIO_PDR, PIOx_P14    
-@     pop         { pc }
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH2, PIOx_P02
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_SCK0, PIOx_P02
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_DATRG, PIOx_P02
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TWD0, PIOx_P03
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3, PIOx_P03
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TWCK0, PIOx_P04
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK0, PIOx_P04
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RXD0, PIOx_P05
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3_1, PIOx_P05
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TXD0, PIOx_P06
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK0, PIOx_P06
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RTS0, PIOx_P07
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH3, PIOx_P07
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_CTS0, PIOx_P08
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_ADTRG, PIOx_P08
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_URXD0, PIOx_P09
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS1, PIOx_P09
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWMFI0, PIOx_P09
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_UTXD0, PIOx_P10
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS2, PIOx_P10
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_NPCS0, PIOx_P11
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH0_1, PIOx_P11
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_MISO, PIOx_P12
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH1_1, PIOx_P12
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_MOSI, PIOx_P13
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH2_1, PIOx_P13
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_SPCK, PIOx_P14
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH3_1, PIOx_P14
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TF, PIOx_P15
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA1, PIOx_P15
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWML3, PIOx_P15
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TK, PIOx_P16
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB1, PIOx_P16
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWML2, PIOx_P16
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TD, PIOx_P17
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK1, PIOx_P17
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWMH3_2, PIOx_P17
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RD, PIOx_P18
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK2, PIOx_P18
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A14, PIOx_P18
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RK, PIOx_P19
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWML0, PIOx_P19
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A15, PIOx_P19
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RF, PIOx_P20
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWML1, PIOx_P20
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A16, PIOx_P20
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RXD1, PIOx_P21
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK1_1, PIOx_P21
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TXD1, PIOx_P22
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3_2, PIOx_P22
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_NCS2, PIOx_P22
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_SCK1, PIOx_P23
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH0_2, PIOx_P23
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A19, PIOx_P23
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RTS1, PIOx_P24
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH1_2, PIOx_P24
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A20, PIOx_P24
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_CTS1, PIOx_P25
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH2_2, PIOx_P25
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_23, PIOx_P25
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DCD1, PIOx_P26
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA2, PIOx_P26
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA2, PIOx_P26
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DTR1, PIOx_P27
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB2, PIOx_P27
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA3, PIOx_P27
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DSR1, PIOx_P28
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK1, PIOx_P28
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCCDA, PIOx_P28
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RI1, PIOx_P29
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK2, PIOx_P29
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCCK, PIOx_P29
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWML2_1, PIOx_P30
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS2_1, PIOx_P30
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA0, PIOx_P30
+
+    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_NPCS1_1, PIOx_P31
+    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK2_1, PIOx_P31
+    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA1, PIOx_P31
+
+    @ PIOB Peripheral Options
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWMH0, PIOx_P00
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWMH1, PIOx_P01
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_URXD1, PIOx_P02
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_NPCS2, PIOx_P02
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_UTXD1, PIOx_P03
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PCK2, PIOx_P03
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_TWD1, PIOx_P04
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWMH2, PIOx_P04
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_TWCK1, PIOx_P05
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWML0, PIOx_P05
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWML1, PIOx_P12
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWML2, PIOx_P13
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PCK0, PIOx_P13
+
+    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_NPCS1, PIOx_P14
+    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWMH3, PIOx_P14
 
     .end

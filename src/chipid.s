@@ -24,8 +24,8 @@
 
     @ Register addresses of CHIPID
     .equ        CHIPID_BASE, 0x400E0740                                         @ Base register address
-    .equ        CHIPID_CIDR_OFFSET, 0x0                                         @ Offset to register Chip ID Register
-    .equ        CHIPID_EXID_OFFSET, 0x4                                         @ Offset to register Chip ID Extension Register
+    .equ        CHIPID_CIDR, (CHIPID_BASE + 0x0)                                @ Address to register Chip ID Register
+    .equ        CHIPID_EXID, (CHIPID_BASE + 0x4)                                @ Address to register Chip ID Extension Register
 
     @ Register CHIPID_CIDR
     @ 31  | 30 29 28 | 27 26 25 24 23 22 21 20 | 19 18 17 16 | 15 14 13 12 | 11 10 09 08 | 07 06 05 | 04 03 02 01 00
@@ -34,8 +34,8 @@
 CHIPID_CIDR_Get:
     .global     CHIPID_CIDR_Get
     .type       CHIPID_CIDR_Get, %function    
-    ldr         r1, =CHIPID_BASE
-    ldr         r0, [r1, #CHIPID_CIDR_OFFSET]
+    ldr         r1, =CHIPID_CIDR
+    ldr         r0, [r1]
     bx          lr
 
     .end

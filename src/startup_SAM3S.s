@@ -338,7 +338,7 @@ UDP_IRQHandler:
     
     .align
 
-@ @ User Initial Stack & Heap
+@ User Initial Stack & Heap
 @ .ifdef __MICROLIB
 @     .global __initial_sp
 @     .global __heap_base
