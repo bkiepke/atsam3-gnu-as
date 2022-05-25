@@ -27,7 +27,7 @@ OC_OPT := -S -O ihex
 OD_OPT := -S
 SZ_OPT := 
 AR_OPT := -r
-NM_OPT := -n
+NM_OPT := --numeric-sort --print-size --line-numbers --print-file-name
 
 # Get list of sources and output files
 SRCS := $(wildcard *.s $(foreach fd, $(INC_DIRS), $(fd)/*.s))
@@ -46,6 +46,7 @@ build: echoes clean create $(OBJS)
 #	$(LD) $(LD_OPT) $(addprefix $(OBJ_PATH)/,$(notdir $(OBJS))) -o $(BIN_PATH)/$(OUTFILE).elf -T $(LD_PATH)/flash.ld
 	$(OC) $(OC_OPT) $(BIN_PATH)/$(OUTFILE).elf $(BIN_PATH)/$(OUTFILE).hex
 	$(OD) $(OD_OPT) $(BIN_PATH)/$(OUTFILE).elf > $(BIN_PATH)/$(OUTFILE).lst
+	$(NM) $(NM_OPT) $(BIN_PATH)/$(OUTFILE).elf > $(BIN_PATH)/$(OUTFILE).sym
 	$(SZ) $(SZ_OPT) $(BIN_PATH)/$(OUTFILE).elf
 	@echo "... done"
 
