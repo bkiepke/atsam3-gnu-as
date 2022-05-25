@@ -2,17 +2,38 @@
     "configurations": [
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./bin/executable.elf",
+            "executable": "${workspaceRoot}/bin/firmware.elf",
             "serverpath" : "/usr/bin/JLinkGDBServerCLExe",
             "servertype" : "jlink",
-            "device": "ATSAM3S4C",
+            "device": "ATSAM3S4B",
             "interface": "jtag",
             "serialNumber": "28009703",
-            "name": "Debug SAM-ICE",
+            "name": "Debug by SAM-ICE",
             "request": "launch",
             "type": "cortex-debug",
-            "showDevDebugOutput": true,
-            "runToMain": true
+            "showDevDebugOutput": "both",
+            "runToMain": false,
+            "svdFile": "${workspaceRoot}/cfg/debugger/ATSAM3S4B.svd"
+        },
+        {
+            "name": "Launch gdb-multiarch",
+            "type": "cppdbg",
+            "request": "launch",
+            "miDebuggerPath": "/usr/bin/gdb-multiarch",
+            "miDebuggerArgs": "--cd=${workspaceFolder} --nx",
+            "MIMode": "gdb",
+             "program": "${workspaceRoot}/bin/firmware.elf",
+              "setupCommands": [
+                {"text": "set remotetimeout 5"},
+                {"text": "target remote localhost:50000"},
+                {"text": "monitor reset halt"},
+                {"text": "file '${workspaceRoot}/bin/firmware.elf'"},
+                {"text": "load"},
+                {"text": "break main","ignoreFailures": true}
+            ],
+            "launchCompleteCommand": "None",
+            "externalConsole": false,
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
