@@ -24,7 +24,7 @@ void OnProjectLoad (void) {
   //
   Project.AddPathSubstitute ("/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/cfg/debugger", "$(ProjectDir)");
   Project.AddPathSubstitute ("/home/benny/projekte_lokal/02_coding/01_arm/gnu_as_test/cfg/debugger", "$(ProjectDir)");
-  Project.SetDevice ("ATSAM3S4C");
+  Project.SetDevice ("ATSAM3S4B");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("JTAG");
   Project.SetTIFSpeed ("4 MHz");
@@ -33,7 +33,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/bin/executable.elf");
+  File.Open ("/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/bin/firmware.elf");
 }
 
 /*********************************************************************

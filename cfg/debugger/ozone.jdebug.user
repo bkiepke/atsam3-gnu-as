@@ -1,28 +1,30 @@
 
-Breakpoint=/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/app.s:19, State=BP_STATE_ON
-Breakpoint=0x200000CC, State=BP_STATE_ON
-OpenDocument="app.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/app.s", Line=0
+Breakpoint=/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/app.s:12, State=BP_STATE_ON
+Breakpoint=0x200000CC, State=BP_STATE_DISABLED
+OpenDocument="common.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/common.s", Line=1
+OpenDocument="app.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/app.s", Line=22
+OpenDocument="pio.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/pio.s", Line=336
 OpenDocument="chipid.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/chipid.s", Line=0
-OpenDocument="startup_SAM3S.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/startup_SAM3S.s", Line=115
-OpenDocument="pmc.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/pmc.s", Line=72
+OpenDocument="startup_SAM3S.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/startup_SAM3S.s", Line=116
+OpenDocument="pmc.s", FilePath="/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/pmc.s", Line=254
 OpenToolbar="File", Floating=0, x=0, y=0
 OpenToolbar="View", Floating=0, x=1, y=0
 OpenToolbar="Debug", Floating=0, x=2, y=0
 OpenToolbar="Breakpoints", Floating=0, x=3, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=1020, h=510, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=426, h=255, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=1020, h=118, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=426, h=276, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=255
-OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=690, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x400E0408
-OpenWindow="Global Data", DockArea=RIGHT, x=0, y=1, w=1020, h=104, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Memory Usage", DockArea=LEFT, x=0, y=2, w=426, h=201, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=451, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=1, CodePaneShown=1, PinCursor="Cursor Movable", TimePerDiv="1 ns / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="285;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=1, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="266;0", CodeGraphLegendShown=1, CodeGraphLegendPosition="282;0"
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=630, h=493, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=478, h=197, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=630, h=129, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=478, h=343, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=255
+OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=690, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x400E0400
+OpenWindow="Global Data", DockArea=RIGHT, x=0, y=1, w=630, h=150, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Memory Usage", DockArea=LEFT, x=0, y=2, w=478, h=232, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=451, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=1, CodePaneShown=1, PinCursor="Cursor Movable", TimePerDiv="1 ns / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="285;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=1, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="267;0", CodeGraphLegendShown=1, CodeGraphLegendPosition="282;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=767, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[100;100;100;100;100;520]
+TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[100;100;100;100;100;130]
 TableHeader="Vector Catches", SortCol="None", SortOrder="ASCENDING", VisibleCols=["";"Vector Catch";"Description"], ColWidths=[50;300;500]
 TableHeader="Break & Tracepoints", SortCol="None", SortOrder="ASCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[100;100;100;406]
 TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[141;100;100;100;539]
 TableHeader="Power Sampling", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[181;105;718]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;358]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[181;161;294]
