@@ -9,7 +9,7 @@
     @ PIO A
 
     @ Macro for switching to peripheral function A
-    .macro  Macro_PIOA_SwitchTo_A, label, pin
+    .macro  Macro_PIOA_SwitchToA, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -21,7 +21,7 @@
     .endm
 
     @ Macro for switching to peripheral function B
-    .macro  Macro_PIOA_SwitchTo_B, label, pin
+    .macro  Macro_PIOA_SwitchToB, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -33,7 +33,7 @@
     .endm
 
     @ Macro for switching to peripheral function C
-    .macro  Macro_PIOA_SwitchTo_C, label, pin
+    .macro  Macro_PIOA_SwitchToC, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -47,7 +47,7 @@
     @ PIO B
 
     @ Macro for switching to peripheral function A
-    .macro  Macro_PIOB_SwitchTo_A, label, pin
+    .macro  Macro_PIOB_SwitchToA, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -59,7 +59,7 @@
     .endm
 
     @ Macro for switching to peripheral function B
-    .macro  Macro_PIOB_SwitchTo_B, label, pin
+    .macro  Macro_PIOB_SwitchToB, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -71,7 +71,7 @@
     .endm
 
     @ Macro for switching to peripheral function C
-    .macro  Macro_PIOB_SwitchTo_C, label, pin
+    .macro  Macro_PIOB_SwitchToC, label, pin
 \label:
     .global     \label
     .type       \label, %function
@@ -324,146 +324,146 @@
     @
 
     @ PIOA Peripheral Options
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH0, PIOx_P00
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA, PIOx_P00
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A17, PIOx_P00
+    Macro_PIOA_SwitchToA    PIOA_SwitchToPWMH0, PIOx_P00
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOA, PIOx_P00
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA17, PIOx_P00
     
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH1, PIOx_P01
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB0, PIOx_P01
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A18, PIOx_P01
+    Macro_PIOA_SwitchToA    PIOA_SwitchToPWMH1, PIOx_P01
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOB0, PIOx_P01
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA18, PIOx_P01
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWMH2, PIOx_P02
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_SCK0, PIOx_P02
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_DATRG, PIOx_P02
+    Macro_PIOA_SwitchToA    PIOA_SwitchToPWMH2, PIOx_P02
+    Macro_PIOA_SwitchToB    PIOA_SwitchToSCK0, PIOx_P02
+    Macro_PIOA_SwitchToC    PIOA_SwitchToDATRG, PIOx_P02
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TWD0, PIOx_P03
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3, PIOx_P03
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTWD0, PIOx_P03
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS3, PIOx_P03
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TWCK0, PIOx_P04
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK0, PIOx_P04
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTWCK0, PIOx_P04
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTCLK0, PIOx_P04
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RXD0, PIOx_P05
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3_1, PIOx_P05
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRXD0, PIOx_P05
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS3_1, PIOx_P05
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TXD0, PIOx_P06
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK0, PIOx_P06
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTXD0, PIOx_P06
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPCK0, PIOx_P06
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RTS0, PIOx_P07
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH3, PIOx_P07
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRTS0, PIOx_P07
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH3, PIOx_P07
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_CTS0, PIOx_P08
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_ADTRG, PIOx_P08
+    Macro_PIOA_SwitchToA    PIOA_SwitchToCTS0, PIOx_P08
+    Macro_PIOA_SwitchToB    PIOA_SwitchToADTRG, PIOx_P08
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_URXD0, PIOx_P09
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS1, PIOx_P09
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWMFI0, PIOx_P09
+    Macro_PIOA_SwitchToA    PIOA_SwitchToURXD0, PIOx_P09
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS1, PIOx_P09
+    Macro_PIOA_SwitchToC    PIOA_SwitchToPWMFI0, PIOx_P09
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_UTXD0, PIOx_P10
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS2, PIOx_P10
+    Macro_PIOA_SwitchToA    PIOA_SwitchToUTXD0, PIOx_P10
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS2, PIOx_P10
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_NPCS0, PIOx_P11
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH0_1, PIOx_P11
+    Macro_PIOA_SwitchToA    PIOA_SwitchToNPCS0, PIOx_P11
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH0_1, PIOx_P11
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_MISO, PIOx_P12
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH1_1, PIOx_P12
+    Macro_PIOA_SwitchToA    PIOA_SwitchToMISO, PIOx_P12
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH1_1, PIOx_P12
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_MOSI, PIOx_P13
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH2_1, PIOx_P13
+    Macro_PIOA_SwitchToA    PIOA_SwitchToMOSI, PIOx_P13
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH2_1, PIOx_P13
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_SPCK, PIOx_P14
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH3_1, PIOx_P14
+    Macro_PIOA_SwitchToA    PIOA_SwitchToSPCK, PIOx_P14
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH3_1, PIOx_P14
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TF, PIOx_P15
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA1, PIOx_P15
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWML3, PIOx_P15
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTF, PIOx_P15
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOA1, PIOx_P15
+    Macro_PIOA_SwitchToC    PIOA_SwitchToPWML3, PIOx_P15
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TK, PIOx_P16
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB1, PIOx_P16
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWML2, PIOx_P16
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTK, PIOx_P16
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOB1, PIOx_P16
+    Macro_PIOA_SwitchToC    PIOA_SwitchToPWML2, PIOx_P16
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TD, PIOx_P17
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK1, PIOx_P17
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_PWMH3_2, PIOx_P17
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTD, PIOx_P17
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPCK1, PIOx_P17
+    Macro_PIOA_SwitchToC    PIOA_SwitchToPWMH3_2, PIOx_P17
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RD, PIOx_P18
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK2, PIOx_P18
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A14, PIOx_P18
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRD, PIOx_P18
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPCK2, PIOx_P18
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA14, PIOx_P18
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RK, PIOx_P19
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWML0, PIOx_P19
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A15, PIOx_P19
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRK, PIOx_P19
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWML0, PIOx_P19
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA15, PIOx_P19
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RF, PIOx_P20
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWML1, PIOx_P20
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A16, PIOx_P20
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRF, PIOx_P20
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWML1, PIOx_P20
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA16, PIOx_P20
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RXD1, PIOx_P21
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK1_1, PIOx_P21
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRXD1, PIOx_P21
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPCK1_1, PIOx_P21
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_TXD1, PIOx_P22
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS3_2, PIOx_P22
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_NCS2, PIOx_P22
+    Macro_PIOA_SwitchToA    PIOA_SwitchToTXD1, PIOx_P22
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS3_2, PIOx_P22
+    Macro_PIOA_SwitchToC    PIOA_SwitchToNCS2, PIOx_P22
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_SCK1, PIOx_P23
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH0_2, PIOx_P23
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A19, PIOx_P23
+    Macro_PIOA_SwitchToA    PIOA_SwitchToSCK1, PIOx_P23
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH0_2, PIOx_P23
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA19, PIOx_P23
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RTS1, PIOx_P24
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH1_2, PIOx_P24
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_A20, PIOx_P24
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRTS1, PIOx_P24
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH1_2, PIOx_P24
+    Macro_PIOA_SwitchToC    PIOA_SwitchToA20, PIOx_P24
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_CTS1, PIOx_P25
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PWMH2_2, PIOx_P25
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_23, PIOx_P25
+    Macro_PIOA_SwitchToA    PIOA_SwitchToCTS1, PIOx_P25
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPWMH2_2, PIOx_P25
+    Macro_PIOA_SwitchToC    PIOA_SwitchTo23, PIOx_P25
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DCD1, PIOx_P26
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOA2, PIOx_P26
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA2, PIOx_P26
+    Macro_PIOA_SwitchToA    PIOA_SwitchToDCD1, PIOx_P26
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOA2, PIOx_P26
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCDA2, PIOx_P26
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DTR1, PIOx_P27
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TIOB2, PIOx_P27
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA3, PIOx_P27
+    Macro_PIOA_SwitchToA    PIOA_SwitchToDTR1, PIOx_P27
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTIOB2, PIOx_P27
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCDA3, PIOx_P27
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_DSR1, PIOx_P28
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK1, PIOx_P28
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCCDA, PIOx_P28
+    Macro_PIOA_SwitchToA    PIOA_SwitchToDSR1, PIOx_P28
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTCLK1, PIOx_P28
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCCDA, PIOx_P28
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_RI1, PIOx_P29
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_TCLK2, PIOx_P29
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCCK, PIOx_P29
+    Macro_PIOA_SwitchToA    PIOA_SwitchToRI1, PIOx_P29
+    Macro_PIOA_SwitchToB    PIOA_SwitchToTCLK2, PIOx_P29
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCCK, PIOx_P29
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_PWML2_1, PIOx_P30
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_NPCS2_1, PIOx_P30
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA0, PIOx_P30
+    Macro_PIOA_SwitchToA    PIOA_SwitchToPWML2_1, PIOx_P30
+    Macro_PIOA_SwitchToB    PIOA_SwitchToNPCS2_1, PIOx_P30
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCDA0, PIOx_P30
 
-    Macro_PIOA_SwitchTo_A    PIOA_SwitchTo_NPCS1_1, PIOx_P31
-    Macro_PIOA_SwitchTo_B    PIOA_SwitchTo_PCK2_1, PIOx_P31
-    Macro_PIOA_SwitchTo_C    PIOA_SwitchTo_MCDA1, PIOx_P31
+    Macro_PIOA_SwitchToA    PIOA_SwitchToNPCS1_1, PIOx_P31
+    Macro_PIOA_SwitchToB    PIOA_SwitchToPCK2_1, PIOx_P31
+    Macro_PIOA_SwitchToC    PIOA_SwitchToMCDA1, PIOx_P31
 
     @ PIOB Peripheral Options
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWMH0, PIOx_P00
+    Macro_PIOB_SwitchToA    PIOB_SwitchToPWMH0, PIOx_P00
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWMH1, PIOx_P01
+    Macro_PIOB_SwitchToA    PIOB_SwitchToPWMH1, PIOx_P01
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_URXD1, PIOx_P02
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_NPCS2, PIOx_P02
+    Macro_PIOB_SwitchToA    PIOB_SwitchToURXD1, PIOx_P02
+    Macro_PIOB_SwitchToB    PIOB_SwitchToNPCS2, PIOx_P02
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_UTXD1, PIOx_P03
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PCK2, PIOx_P03
+    Macro_PIOB_SwitchToA    PIOB_SwitchToUTXD1, PIOx_P03
+    Macro_PIOB_SwitchToB    PIOB_SwitchToPCK2, PIOx_P03
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_TWD1, PIOx_P04
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWMH2, PIOx_P04
+    Macro_PIOB_SwitchToA    PIOB_SwitchToTWD1, PIOx_P04
+    Macro_PIOB_SwitchToB    PIOB_SwitchToPWMH2, PIOx_P04
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_TWCK1, PIOx_P05
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWML0, PIOx_P05
+    Macro_PIOB_SwitchToA    PIOB_SwitchToTWCK1, PIOx_P05
+    Macro_PIOB_SwitchToB    PIOB_SwitchToPWML0, PIOx_P05
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWML1, PIOx_P12
+    Macro_PIOB_SwitchToA    PIOB_SwitchToPWML1, PIOx_P12
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_PWML2, PIOx_P13
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PCK0, PIOx_P13
+    Macro_PIOB_SwitchToA    PIOB_SwitchToPWML2, PIOx_P13
+    Macro_PIOB_SwitchToB    PIOB_SwitchToPCK0, PIOx_P13
 
-    Macro_PIOB_SwitchTo_A    PIOB_SwitchTo_NPCS1, PIOx_P14
-    Macro_PIOB_SwitchTo_B    PIOB_SwitchTo_PWMH3, PIOx_P14
+    Macro_PIOB_SwitchToA    PIOB_SwitchToNPCS1, PIOx_P14
+    Macro_PIOB_SwitchToB    PIOB_SwitchToPWMH3, PIOx_P14
 
     .end

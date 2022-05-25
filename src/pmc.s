@@ -265,22 +265,14 @@ PMC_PMC_SCDR_PCK0_Disable:
 @    pop         { pc }
 
 
-PMC_PMC_USB_Clock_Enable:
-    .global     PMC_PMC_USB_Clock_Enable
-    .type       PMC_PMC_USB_Clock_Enable, %function
+PMC_PMC_USB_ClockEnable:
+    .global     PMC_PMC_USB_ClockEnable
+    .type       PMC_PMC_USB_ClockEnable, %function
     push        { lr }
     SetValueWO  PMC_PMC_USB, (1 << PMC_PMC_USB_USBDIV)                          @ Select PLLA with 96MHz, will provide 48MHZ
     SetValueWO  PMC_PMC_SCER, PMC_PMC_SCxR_UDP                                  @ Enable USBCK
-    SetValueWO  PMC_PMC_PCER1, (1 << (PERIPHERAL_UDP - 32))                     @ Enable Clock for peripheral
+    SetValueWO  PMC_PMC_PCER1, (1 << PERIPHERAL_1_UDP)                          @ Enable Clock for peripheral
     pop         { pc }
-
-
-
-@ /* USB Clock uses PLLB */
-@ PMC->PMC_USB = PMC_USB_USBDIV(1)    /* /2   */
-@              | PMC_USB_USBS@        /* PLLB */
-
-
 
     @ Register PMC_WPMR, read-write
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 | 07 06 05 04 03 02 01 | 00
@@ -292,28 +284,19 @@ PMC_PMC_USB_Clock_Enable:
     .equ        PMC_WPMR_ENABLE, 0x504D4301
     .equ        PMC_WPMR_DISABLE, 0x504D4300
 
-PMC_Write_Protect_Enable:
-    .global     PMC_Write_Protect_Enable
-    .type       PMC_Write_Protect_Enable, %function
+PMC_PMC_WPMR_WriteProtectEnable:
+    .global     PMC_PMC_WPMR_WriteProtectEnable
+    .type       PMC_PMC_WPMR_WriteProtectEnable, %function
     push        { lr }
     SetValueWO  PMC_PMC_WPMR, PMC_WPMR_ENABLE
     pop         { pc }
     
 
-PMC_Write_Protect_Disable:
-    .global     PMC_Write_Protect_Disable
-    .type       PMC_Write_Protect_Disable, %function
+PMC_PMC_WPMR_WriteProtectDisable:
+    .global     PMC_PMC_WPMR_WriteProtectDisable
+    .type       PMC_PMC_WPMR_WriteProtectDisable, %function
     push        { lr }
     SetValueWO  PMC_PMC_WPMR, PMC_WPMR_DISABLE
     pop         { pc }
 
     .end
-
-
-
-
-
-
-@ USB
-@ PMC->PMC_PCER0 = 1 << dwId @ // Enable peripheral clock
-@ REG_PMC_SCER = PMC_SCER_UDP@ // Enable USB clock

@@ -27,8 +27,8 @@ SystemInit:
     @ Setup PCK output
     .global     PMC_PMC_SCER_PCK0_Enable
     bl          PMC_PMC_SCER_PCK0_Enable
-    .global     PIOA_SwitchTo_PCK0
-    bl          PIOA_SwitchTo_PCK0
+    .global     PIOA_SwitchToPCK0
+    bl          PIOA_SwitchToPCK0
     .global     PMC_PMC_PCK0_OutputClock
     bl          PMC_PMC_PCK0_OutputClock
 
@@ -39,16 +39,23 @@ SystemInit:
     @bl          PMC_PMC_SCER_UDP_Enable
     @.global     PMC_PMC_SCDR_UDP_Disable
     @bl          PMC_PMC_SCDR_UDP_Disable
-    .global     PMC_PMC_USB_Clock_Enable
-    bl          PMC_PMC_USB_Clock_Enable
+    .global     PMC_PMC_USB_ClockEnable
+    bl          PMC_PMC_USB_ClockEnable
 
 
 
     @ Setup watchdog
 
-    @ Enable write protect
-    .global     PMC_Write_Protect_Enable
-    bl          PMC_Write_Protect_Enable
+    @ Enable write protect PMC
+    .global     PMC_PMC_WPMR_WriteProtectEnable
+    bl          PMC_PMC_WPMR_WriteProtectEnable
+
+    @ Setup DACC
+    
+
+    @ Enable write protect DAC
+    .global     DACC_DACC_WPMR_WriteProtectEnable
+    bl          DACC_DACC_WPMR_WriteProtectEnable
 
     pop         { pc }                                                          @ Restore return address and return to caller
 
