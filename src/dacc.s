@@ -1,4 +1,4 @@
-.syntax unified
+    .syntax unified
     .cpu cortex-m3
     .arch armv7-m
     .thumb
@@ -7,15 +7,15 @@
     .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
 
     @ Macros
-    .macro Macro_ , label, value, flag
-\label:
-    .global     \label
-    .type       \label, %function
-    push        { lr }
-    SetValueWO      PMC_CKGR_MOR, \value
-    VerifyFlagSet   PMC_PMC_SR, \flag
-    pop         { pc }
-    .endm
+@    .macro Macro_ , label, value, flag
+@\label:
+@    .global     \label
+@    .type       \label, %function
+@    push        { lr }
+@    SetValueWO      PMC_CKGR_MOR, \value
+@    VerifyFlagSet   PMC_PMC_SR, \flag
+@    pop         { pc }
+@    .endm
 
 
 @    .section .text, "ax"
@@ -36,9 +36,9 @@
     .equ        DACC_DACC_WPMR, (DACC_BASE + 0x00E4)                            @ Address to register Write Protect Mode Register
     .equ        DACC_DACC_WPSR, (DACC_BASE + 0x00E8)                            @ Address to register Write Protect Status Register
 
-    @ Register DACC_SR, write-only
-    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  SWRST
+    @ Register DACC_CR, write-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | SWRST
     @
     @ SWRST : 0 = No effect.
     @       : 1 = Resets the DACC simulating a hardware reset.
@@ -97,6 +97,13 @@
     .equ        DACC_DACC_MR_MAXS, 21
     .equ        DACC_DACC_MR_STARTUP, 24
 
+DACC_DACC_MR_Setup:
+    .global     DACC_DACC_MR_Setup
+    .type       DACC_DACC_MR_Setup, %function
+    push        { lr }
+    SetValueWO  DACC_DACC_MR, (8 << DACC_DACC_MR_STARTUP) | (1 << DACC_DACC_MR_TAG) | (127 << DACC_DACC_MR_REFRESH)
+    pop         { pc }
+
     @ Register DACC_CHER, write-only
     @ Register DACC_CHDR, write-only
     @ Register DACC_CHSR, read-only
@@ -111,16 +118,40 @@
     .equ        DACC_DACC_CHxR_CH0, 0
     .equ        DACC_DACC_CHxR_CH1, 1
 
+DACC_DACC_CHER_Enable:
+    .global     DACC_DACC_CHER_Enable
+    .type       DACC_DACC_CHER_Enable, %function
+    push        { lr }
+    SetValueWO  DACC_DACC_CHER, (1 << DACC_DACC_CHxR_CH1) | (1 << DACC_DACC_CHxR_CH0)
+    pop         { pc }
+
     @ Register DACC_CDR, write-only
-    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 | 01  | 00
+    @ WORD-Transfer:
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
     @ DATA
     @
-    @ CH0 : 0 = No effect.
-    @     : 1 = Enables Channel 0
-    @ CH1 : 0 = No effect.
-    @     : 1 = Enables Channel 1
-    @
-    .equ        DACC_DACC_CDR_DATA, 0
+    @ HALF-WORD-Transfer:
+    @ 31 30 | 29 28   | 27 26 25 24 23 22 21 20 19 18 17 16 | 15 14 | 13 12   | 11 10 09 08 07 06 05 04 03 02 01 00
+    @ -  -  | HWH_CHx | HWH_DATA                            | -  -  | HWL_CHx | HWL_DATA
+
+    .equ        DACC_DACC_CDR_DATA_WT, 0
+
+    .equ        DACC_DACC_CDR_DATA_HWTH, 16                                     @ upper half word, bits [31..16]
+    .equ        DACC_DACC_CDR_DATA_HWTL, 0                                      @ lower half word, bits [15..00]
+
+    .equ        DACC_DACC_CDR_DATA_CH0, 0x0000                                  @ select channel 0
+    .equ        DACC_DACC_CDR_DATA_CH1, 0x1000                                  @ select channel 1
+
+    .equ        DACC_DACC_CDR_DATA_VOLT0, 0x003F                                @ value range [000...FFF]
+    .equ        DACC_DACC_CDR_DATA_VOLT1, 0x0100
+
+DACC_DACC_CDR_Convert:
+    .global     DACC_DACC_CDR_Convert
+    .type       DACC_DACC_CDR_Convert, %function
+    push        { lr, r1 }
+    SetValueWO_R  DACC_DACC_CDR, r2 @ (((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL))
+    pop         { r1, pc }
+
 
     @ Register DACC_IER, write-only
     @ Register DACC_IDR, write-only
