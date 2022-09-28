@@ -44,6 +44,15 @@
     @       : 1 = Resets the DACC simulating a hardware reset.
     .equ        DACC_DACC_CR_SWRST, 0x00000001
 
+DACC_DACC_CR_Reset:
+    .global     DACC_DACC_CR_Reset
+    .type       DACC_DACC_CR_Reset, %function
+    push        { lr }
+    RegisterSetValueWO  DACC_DACC_CR, DACC_DACC_CR_SWRST
+    pop         { pc }
+
+
+
     @ Register DACC_MR, read-write
     @ 31 30 | 29 28 27 26 25 24 | 23 22 | 21   | 20  | 19 18 | 17 16    | 15 14 13 12 11 10 09 08 | 07 | 06       | 05    | 04   | 03 02 01 | 00
     @ -  -  | STARTUP           | -  -  | MAXS | TAG | -  -  | USER_SEL | REFRESH                 | -  | FASTWKUP | SLEEP | WORD | TRGSEL   | TRGEN
@@ -80,11 +89,59 @@
     @         : 8 = 512 periods of DAC Clock.
     @         : 9 = 576 periods of DAC Clock.
     @         : 10 = 640 periods of DAC Clock.
-    @         : 11 = 704 periods of DAC Clock. 
+    @         : 11 = 704 periods of DAC Clock.
     @         : 12 = 768 periods of DAC Clock.
     @         : 13 = 832 periods of DAC Clock.
-    @         : 14 = 896 periods of DAC Clock. 
+    @         : 14 = 896 periods of DAC Clock.
     @         : 15 = 960 periods of DAC Clock.
+    @ STARTUP : 16 = 1024 periods of DAC Clock.
+    @         ; 17 = 1088 periods of DAC Clock.
+    @         : 18 = 1152 periods of DAC Clock.
+    @         : 19 = 1216 periods of DAC Clock.
+    @         : 20 = 1280 periods of DAC Clock.
+    @         : 21 = 1344 periods of DAC Clock.
+    @         : 22 = 1408 periods of DAC Clock.
+    @         : 23 = 1472 periods of DAC Clock.
+    @         : 24 = 1536 periods of DAC Clock.
+    @         : 25 = 1600 periods of DAC Clock.
+    @         : 26 = 1664 periods of DAC Clock.
+    @         : 27 = 1728 periods of DAC Clock.
+    @         : 28 = 1792 periods of DAC Clock.
+    @         : 29 = 1856 periods of DAC Clock.
+    @         : 30 = 1920 periods of DAC Clock.
+    @         : 31 = 1984 periods of DAC Clock.
+    @ STARTUP : 32 = 2048 periods of DAC Clock.
+    @         ; 33 = 2112 periods of DAC Clock.
+    @         : 34 = 2176 periods of DAC Clock.
+    @         : 35 = 2240 periods of DAC Clock.
+    @         : 36 = 2304 periods of DAC Clock.
+    @         : 37 = 2368 periods of DAC Clock.
+    @         : 38 = 2432 periods of DAC Clock.
+    @         : 39 = 2496 periods of DAC Clock.
+    @         : 40 = 2560 periods of DAC Clock.
+    @         : 41 = 2624 periods of DAC Clock.
+    @         : 42 = 2688 periods of DAC Clock.
+    @         : 43 = 2752 periods of DAC Clock.
+    @         : 44 = 2816 periods of DAC Clock.
+    @         : 45 = 2880 periods of DAC Clock.
+    @         : 46 = 2944 periods of DAC Clock.
+    @         : 47 = 3008 periods of DAC Clock.
+    @ STARTUP : 48 = 3072 periods of DAC Clock.
+    @         ; 49 = 3136 periods of DAC Clock.
+    @         : 50 = 3200 periods of DAC Clock.
+    @         : 51 = 3264 periods of DAC Clock.
+    @         : 52 = 3328 periods of DAC Clock.
+    @         : 53 = 3392 periods of DAC Clock.
+    @         : 54 = 3456 periods of DAC Clock.
+    @         : 55 = 3520 periods of DAC Clock.
+    @         : 56 = 3584 periods of DAC Clock.
+    @         : 57 = 3648 periods of DAC Clock.
+    @         : 58 = 3712 periods of DAC Clock.
+    @         : 59 = 3776 periods of DAC Clock.
+    @         : 60 = 3840 periods of DAC Clock.
+    @         : 61 = 3904 periods of DAC Clock.
+    @         : 62 = 3968 periods of DAC Clock.
+    @         : 63 = 4032 periods of DAC Clock.
     @
     .equ        DACC_DACC_MR_TRGEN, 0
     .equ        DACC_DACC_MR_TRGSEL, 1
@@ -98,10 +155,13 @@
     .equ        DACC_DACC_MR_STARTUP, 24
 
 DACC_DACC_MR_Setup:
+@    .global     PMC_PMC_PCERO_PeripheralEnable
+@    bl          PMC_PMC_PCERO_PeripheralEnable
+
     .global     DACC_DACC_MR_Setup
     .type       DACC_DACC_MR_Setup, %function
     push        { lr }
-    SetValueWO  DACC_DACC_MR, (8 << DACC_DACC_MR_STARTUP) | (1 << DACC_DACC_MR_TAG) | (127 << DACC_DACC_MR_REFRESH)
+    RegisterSetValueWO  DACC_DACC_MR, (63 << DACC_DACC_MR_STARTUP) | (1 << DACC_DACC_MR_TAG) | (1 << DACC_DACC_MR_REFRESH) | (1 << DACC_DACC_MR_WORD)
     pop         { pc }
 
     @ Register DACC_CHER, write-only
@@ -122,7 +182,7 @@ DACC_DACC_CHER_Enable:
     .global     DACC_DACC_CHER_Enable
     .type       DACC_DACC_CHER_Enable, %function
     push        { lr }
-    SetValueWO  DACC_DACC_CHER, (1 << DACC_DACC_CHxR_CH1) | (1 << DACC_DACC_CHxR_CH0)
+    RegisterSetValueWO  DACC_DACC_CHER, (1 << DACC_DACC_CHxR_CH1) | (1 << DACC_DACC_CHxR_CH0)
     pop         { pc }
 
     @ Register DACC_CDR, write-only
@@ -136,6 +196,7 @@ DACC_DACC_CHER_Enable:
 
     .equ        DACC_DACC_CDR_DATA_WT, 0
 
+    .global     DACC_DACC_CDR_DATA_HWTH
     .equ        DACC_DACC_CDR_DATA_HWTH, 16                                     @ upper half word, bits [31..16]
     .equ        DACC_DACC_CDR_DATA_HWTL, 0                                      @ lower half word, bits [15..00]
 
@@ -148,9 +209,10 @@ DACC_DACC_CHER_Enable:
 DACC_DACC_CDR_Convert:
     .global     DACC_DACC_CDR_Convert
     .type       DACC_DACC_CDR_Convert, %function
-    push        { lr, r1 }
-    SetValueWO_R  DACC_DACC_CDR, r2 @ (((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL))
-    pop         { r1, pc }
+    push        { lr }
+@    ldr         r1, =(((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL))
+    RegisterSetValueWO  DACC_DACC_CDR, (((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL)) 
+    pop         { pc }
 
 
     @ Register DACC_IER, write-only
@@ -200,14 +262,14 @@ DACC_DACC_WPMR_WriteProtectEnable:
     .global     DACC_DACC_WPMR_WriteProtectEnable
     .type       DACC_DACC_WPMR_WriteProtectEnable, %function
     push        { lr }
-    SetValueWO  DACC_DACC_WPMR, DACC_WPMR_ENABLE
+    RegisterSetValueWO  DACC_DACC_WPMR, DACC_WPMR_ENABLE
     pop         { pc }
 
 DACC_DACC_WPMR_WriteProtectDisable:
     .global     DACC_DACC_WPMR_WriteProtectDisable
     .type       DACC_DACC_WPMR_WriteProtectDisable, %function
     push        { lr }
-    SetValueWO  DACC_DACC_WPMR, DACC_WPMR_DISABLE
+    RegisterSetValueWO  DACC_DACC_WPMR, DACC_WPMR_DISABLE
     pop         { pc }
 
     @ Register DACC_WPSR, read-only

@@ -1,3 +1,7 @@
+@ import macros and definitions    
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+
     .syntax unified
     .cpu cortex-m3
     .arch armv7-m
@@ -34,8 +38,11 @@
 CHIPID_CIDR_Get:
     .global     CHIPID_CIDR_Get
     .type       CHIPID_CIDR_Get, %function    
-    ldr         r1, =CHIPID_CIDR
-    ldr         r0, [r1]
-    bx          lr
+@    ldr         r1, =CHIPID_CIDR
+@    ldr         r0, [r1]
+@    bx          lr
+    push        { lr }
+    RegisterGetValue CHIPID_CIDR
+    pop         { pc }
 
     .end

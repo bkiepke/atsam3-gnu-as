@@ -1,4 +1,4 @@
-    @ Peripheral identifiers register 0
+    @ Peripheral identifiers
     .equ        PERIPHERAL_0_SUPC, 0
     .equ        PERIPHERAL_0_RSTC, 1
     .equ        PERIPHERAL_0_RTC, 2
@@ -28,6 +28,7 @@
     .equ        PERIPHERAL_0_ADC, 29
     .equ        PERIPHERAL_0_DACC, 30
     .equ        PERIPHERAL_0_PWM, 31
+    
     .equ        PERIPHERAL_1_CRCCU, 0   @ ID = 32 - 32
     .equ        PERIPHERAL_1_ACC, 1     @ ID = 33 - 32
     .equ        PERIPHERAL_1_UDP, 2     @ ID = 34 - 32

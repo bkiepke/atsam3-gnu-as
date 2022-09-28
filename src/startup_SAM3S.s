@@ -6,7 +6,7 @@
 @ * @date:    14. December 2015
 @ *------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 @ *
-@ * Copyright (C) 2011-213 ARM Limited. All rights reserved.
+@ * Copyright (C) 2011-2013 ARM Limited. All rights reserved.
 @ * ARM Limited (ARM) is supplying this software for use with Cortex-M3
 @ * processor based microcontrollers.  This file can be freely distributed
 @ * within development tools that are supporting such ARM based processors.
@@ -50,6 +50,7 @@ __initial_sp:
     @ .org        Heap_Mem + Heap_Size
 @ __heap_limit:
     @ .eabi_attribute Tag_ABI_align_preserved, 1
+
 @ 
 @ Vector Table Mapped to Address 0 at Reset
 
@@ -118,16 +119,16 @@ __Vectors:
     .thumb
     .thumb_func
     .balign     4
+
+    
 @ Reset Handler
 Reset_Handler:
     .global     Reset_Handler
     .type       Reset_Handler, %function
     .global     SystemInit
     .global     main
-    ldr         r0, =SystemInit
-    blx         r0
-    ldr         r0, =main
-    bx          r0
+    bl          SystemInit
+    b           main
 
 @ Dummy Exception Handlers (infinite loops which can be modified)
 NMI_Handler:     

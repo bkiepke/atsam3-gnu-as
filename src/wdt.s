@@ -1,24 +1,12 @@
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
+@    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+
     .syntax unified
     .cpu cortex-m3
     .arch armv7-m
     .thumb
 
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
-
-    @ Macros
-@    .macro Macro_ , label, value, flag
-@\label:
-@    .global     \label
-@    .type       \label, %function
-@    push        { lr }
-@    SetValueWO      PMC_CKGR_MOR, \value
-@    VerifyFlagSet   PMC_PMC_SR, \flag
-@    pop         { pc }
-@    .endm
-
-
-@    .section .text, "ax"
+    .section .text, "ax"
 
     @ Register addresses of WDT
     .equ        WDT_BASE, 0x400E1450                                            @ Base register address
@@ -38,9 +26,9 @@
 WDT_WDT_CR_Restart:
     .global     WDT_WDT_CR_Restart
     .type       WDT_WDT_CR_Restart, %function
-    push        { lr }
-    SetValueWO  WDT_WDT_CR, WDT_WDT_CR_WDRSTT_KEY
-    pop         { pc }   
+    push        { r0-r1, lr }
+    RegisterSetValueWO  WDT_WDT_CR, WDT_WDT_CR_WDRSTT_KEY
+    pop         { r0-r1, pc }
 
     @ Register WDT_MR, read-write once
     @ 31 30 | 29        | 28       | 27 26 25 24 23 22 21 20 19 18 17 16 | 15    | 14      | 13      | 12     | 11 10 09 08 07 06 05 04 03 02 01 00
@@ -75,9 +63,9 @@ WDT_WDT_CR_Restart:
 WDT_WDT_MR_Disable:
     .global     WDT_WDT_MR_Disable
     .type       WDT_WDT_MR_Disable, %function
-    push        { lr }
-    SetValueWO  WDT_WDT_MR, (1 << WDT_WDT_MR_WDDIS)
-    pop         { pc }
+    push        { r0-r1, lr }
+    RegisterSetValueWO  WDT_WDT_MR, (1 << WDT_WDT_MR_WDDIS)
+    pop         { r0-r1, pc }
 
     @ Register WDT_SR, read-only
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 | 01    | 00
