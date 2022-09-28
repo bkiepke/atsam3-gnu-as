@@ -12,15 +12,18 @@ OD := $(TOOLCHAIN)objdump
 SZ := ${TOOLCHAIN}size
 AR := $(TOOLCHAIN)ar
 NM := $(TOOLCHAIN)nm
+RD := $(TOOLCHAIN)readelf
 
 LD_PATH := $(MK_DIR)cfg/linker
+DBG_PATH := $(MK_DIR)cfg/debugger
 SRC_PATH := $(MK_DIR)src
 INC_DIRS := $(shell find $(SRC_PATH) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 BIN_PATH := $(MK_DIR)bin
 OBJ_PATH := ${BIN_PATH}/obj
 
-AS_OPT := -ggdb -march=armv7-m -mcpu=cortex-m3 -mthumb $(INC_FLAGS) #-alm
+
+AS_OPT := -ggdb -march=armv7-m -mcpu=cortex-m3 -mthumb $(INC_FLAGS) -mimplicit-it=always #-alm
 LD_OPT := --gc-sections --print-memory-usage -Map="$(BIN_PATH)/$(OUTFILE).map" --cref
 #CP_OPT=--strip-all
 OC_OPT := -S -O ihex
@@ -28,6 +31,7 @@ OD_OPT := -S
 SZ_OPT := 
 AR_OPT := -r
 NM_OPT := --numeric-sort --print-size --line-numbers --print-file-name
+RD_OPT := -s
 
 # Get list of sources and output files
 SRCS := $(wildcard *.s $(foreach fd, $(INC_DIRS), $(fd)/*.s))
@@ -47,6 +51,7 @@ build: echoes clean create $(OBJS)
 	$(OC) $(OC_OPT) $(BIN_PATH)/$(OUTFILE).elf $(BIN_PATH)/$(OUTFILE).hex
 	$(OD) $(OD_OPT) $(BIN_PATH)/$(OUTFILE).elf > $(BIN_PATH)/$(OUTFILE).lst
 	$(NM) $(NM_OPT) $(BIN_PATH)/$(OUTFILE).elf > $(BIN_PATH)/$(OUTFILE).sym
+	$(RD) $(RD_OPT) $(BIN_PATH)/$(OUTFILE).elf > $(BIN_PATH)/$(OUTFILE).symtab
 	$(SZ) $(SZ_OPT) $(BIN_PATH)/$(OUTFILE).elf
 	@echo "... done"
 
@@ -74,3 +79,7 @@ echoes:
 	@echo "SRC_PATH : $(SRC_PATH)"
 	@echo "BIN_PATH : $(BIN_PATH)"
 	@echo "OBJ_PATH : $(OBJ_PATH)"
+
+debug:
+	@echo "Will start ozone debugger"
+	ozone -project $(DBG_PATH)/ozone.jdebug
