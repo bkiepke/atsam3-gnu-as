@@ -1,5 +1,15 @@
 @ Be aware that this file should not have an .end directive as it is used by .include directive
 
+@ Macro to update variable in RAM
+    .global UpdateVariable
+    .macro  UpdateVariable, variable:req, value:req
+    push    { r0-r1 }
+    ldr r0, =\variable
+    ldr r1, =\value
+    str r1, [r0]
+    pop     { r0-r1 }
+    .endm
+
 @ Macro to call subroutine, may include up to three parameters
 @ SubRoutine is the label of the routine - required
 @ r0 : Param1 - optional

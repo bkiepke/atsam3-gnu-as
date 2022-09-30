@@ -62,18 +62,21 @@ main:
     .global     main
     .type       main, %function    
 
-    CallSub     DACC_DACC_CDR_Convert, 0x000, 0x000
+@    CallSub     DACC_DACC_CDR_Convert, (((0x1000 | 0x000) << 16) | ((0x0000 | 0x000) << 0))
 
 main_init:
 
 main_loop:
 
-@    CallSub     DelayBlocking, 10
+    UpdateVariable  DACC_CH0_DATA, 0x0FFF
+    UpdateVariable  DACC_CH1_DATA, 0x0000
+    CallSub     DACC_DACC_CDR_Convert
+    CallSub     DelayBlocking, 1000
 
-    CallSub     DelayBlocking, 10
-    CallSub     DACC_DACC_CDR_Convert, (((0x1000 | 0x000) << 16) | ((0x0000 | 0xFFF) << 0))
-    CallSub     DelayBlocking, 10
-    CallSub     DACC_DACC_CDR_Convert, (((0x1000 | 0xFFF) << 16) | ((0x0000 | 0x000) << 0))
+    UpdateVariable  DACC_CH0_DATA, 0x0000
+    UpdateVariable  DACC_CH1_DATA, 0x0FFF
+    CallSub     DACC_DACC_CDR_Convert
+    CallSub     DelayBlocking, 1000
     b           main_loop                                                       @ Final state
 
     .end

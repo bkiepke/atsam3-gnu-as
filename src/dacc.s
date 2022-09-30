@@ -17,8 +17,13 @@
 @    pop         { pc }
 @    .endm
 
+    .section .data
+    .global DACC_CH0_DATA
+    DACC_CH0_DATA: .space 2 @ Reserve 2 bytes
+    .global DACC_CH1_DATA
+    DACC_CH1_DATA: .space 2 @ Reserve 2 bytes
 
-@    .section .text, "ax"
+    .section .text, "ax"
 
     @ Register addresses of DACC
     .equ        DACC_BASE, 0x4003C000                                           @ Base register address
@@ -161,7 +166,7 @@ DACC_DACC_MR_Setup:
     .global     DACC_DACC_MR_Setup
     .type       DACC_DACC_MR_Setup, %function
     push        { lr }
-    RegisterSetValueWO  DACC_DACC_MR, (63 << DACC_DACC_MR_STARTUP) | (1 << DACC_DACC_MR_TAG) | (1 << DACC_DACC_MR_REFRESH) | (1 << DACC_DACC_MR_WORD)
+    RegisterSetValueWO  DACC_DACC_MR, (30 << DACC_DACC_MR_STARTUP) | (1 << DACC_DACC_MR_TAG) | (1 << DACC_DACC_MR_REFRESH) | (1 << DACC_DACC_MR_WORD)
     pop         { pc }
 
     @ Register DACC_CHER, write-only
@@ -194,25 +199,34 @@ DACC_DACC_CHER_Enable:
     @ 31 30 | 29 28   | 27 26 25 24 23 22 21 20 19 18 17 16 | 15 14 | 13 12   | 11 10 09 08 07 06 05 04 03 02 01 00
     @ -  -  | HWH_CHx | HWH_DATA                            | -  -  | HWL_CHx | HWL_DATA
 
-    .equ        DACC_DACC_CDR_DATA_WT, 0
-
-    .global     DACC_DACC_CDR_DATA_HWTH
     .equ        DACC_DACC_CDR_DATA_HWTH, 16                                     @ upper half word, bits [31..16]
     .equ        DACC_DACC_CDR_DATA_HWTL, 0                                      @ lower half word, bits [15..00]
 
     .equ        DACC_DACC_CDR_DATA_CH0, 0x0000                                  @ select channel 0
     .equ        DACC_DACC_CDR_DATA_CH1, 0x1000                                  @ select channel 1
 
-    .equ        DACC_DACC_CDR_DATA_VOLT0, 0x003F                                @ value range [000...FFF]
-    .equ        DACC_DACC_CDR_DATA_VOLT1, 0x0100
+    .equ        DACC_DACC_CDR_DATA_MASK, 0x3FFF0FFF                             @ value range [000...FFF]
+    .equ        DACC_DACC_CDR_DATA_CHANNELS, 0x10000000
 
 DACC_DACC_CDR_Convert:
+    @ r0 : Register for addresses
+    @ r1 : Register for values
+    @ r2 : Register for constants
     .global     DACC_DACC_CDR_Convert
     .type       DACC_DACC_CDR_Convert, %function
-    push        { lr }
-@    ldr         r1, =(((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL))
-    RegisterSetValueWO  DACC_DACC_CDR, (((DACC_DACC_CDR_DATA_CH1 | DACC_DACC_CDR_DATA_VOLT1 ) << DACC_DACC_CDR_DATA_HWTH) | ((DACC_DACC_CDR_DATA_CH0 | DACC_DACC_CDR_DATA_VOLT0 ) << DACC_DACC_CDR_DATA_HWTL)) 
-    pop         { pc }
+    push        { r0-r2, lr }
+    ldr         r0, =DACC_CH1_DATA
+    ldr         r1, [r0]
+    lsl         r1, r1, #DACC_DACC_CDR_DATA_HWTH
+    ldr         r0, =DACC_CH0_DATA
+    ldr         r1, [r0]
+    ldr         r2, =DACC_DACC_CDR_DATA_MASK
+    ands        r1, r1, r2
+    ldr         r2, =DACC_DACC_CDR_DATA_CHANNELS
+    orrs        r1, r1, r2
+    ldr         r0, =DACC_DACC_CDR                                              @ Prepare access to register
+    str         r1, [r0]                                                        @ Write value to register
+    pop         { r0-r2, pc }
 
 
     @ Register DACC_IER, write-only
