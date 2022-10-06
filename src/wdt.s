@@ -26,9 +26,9 @@
 WDT_WDT_CR_Restart:
     .global     WDT_WDT_CR_Restart
     .type       WDT_WDT_CR_Restart, %function
-    push        { r0-r1, lr }
+    push        { lr }
     RegisterSetValueWO  WDT_WDT_CR, WDT_WDT_CR_WDRSTT_KEY
-    pop         { r0-r1, pc }
+    pop         { pc }
 
     @ Register WDT_MR, read-write once
     @ 31 30 | 29        | 28       | 27 26 25 24 23 22 21 20 19 18 17 16 | 15    | 14      | 13      | 12     | 11 10 09 08 07 06 05 04 03 02 01 00
@@ -63,9 +63,9 @@ WDT_WDT_CR_Restart:
 WDT_WDT_MR_Disable:
     .global     WDT_WDT_MR_Disable
     .type       WDT_WDT_MR_Disable, %function
-    push        { r0-r1, lr }
+    push        { lr }
     RegisterSetValueWO  WDT_WDT_MR, (1 << WDT_WDT_MR_WDDIS)
-    pop         { r0-r1, pc }
+    pop         { pc }
 
     @ Register WDT_SR, read-only
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 | 01    | 00
@@ -79,4 +79,7 @@ WDT_WDT_MR_Disable:
     .equ        WDT_WDT_SR_WDUNF, 0
     .equ        WDT_WDT_SR_WDERR, 1
 
+    .align
+
     .end
+    

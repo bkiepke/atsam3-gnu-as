@@ -1,6 +1,7 @@
 @ import macros and definitions    
     .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
     .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/interrupts.inc"
 
     .syntax unified
     .cpu cortex-m3
@@ -21,7 +22,13 @@ SystemInit:
     @ Read chip ID
     CallSub      CHIPID_CIDR_Get                                                @ Get chip identification
 
-    @ Setup main clock
+    @ Setup flash memory controller -> wait states
+
+    @ Setup reset controller -> enable user reset trigger
+
+    @ Setup supply controller -> SLCK source
+
+    @ Setup MAIN clock
     CallSub     PMC_CKGR_MOR_MainCrystalEnable
 
     @ Setup PLL clocks
@@ -37,24 +44,22 @@ SystemInit:
     CallSub     PMC_PMC_PCK0_OutputClock
 
     @ Setup USB clock
-@    CallSub     PMC_PMC_USB_PLLA_Enable                         @@@ gives error
-@    CallSub     PMC_PMC_SCER_UDP_Enable                        @@@ gives error
-@    CallSub     PMC_PMC_SCDR_UDP_Disable                   @@@ gives error
+@    CallSub     PMC_PMC_USB_PLLA_Enable                                            @@@ gives error
+@    CallSub     PMC_PMC_SCER_UDP_Enable                                            @@@ gives error
+@    CallSub     PMC_PMC_SCDR_UDP_Disable                                           @@@ gives error
 @    CallSub     PMC_PMC_USB_ClockEnable
 
-    @ Enable write protect PMC
-    CallSub     PMC_PMC_WPMR_WriteProtectEnable
+    CallSub     PMC_PMC_WPMR_WriteProtectEnable                                 @ Enable write protect PMC
 
     @ Setup DACC
-    CallSub     PMC_PMC_PCER0_Enable_DACC
-    CallSub     DACC_DACC_CR_Reset
+    CallSub     PMC_PMC_PCER0_Enable_DACC                                       @ Enable clock for subsystem
+    CallSub     DACC_DACC_CR_Reset                                              @ Configure subsystem
     CallSub     DACC_DACC_MR_Setup
     CallSub     DACC_DACC_CHER_Enable
-@    CallSub     DACC_DACC_CDR_Convert
+    CallSub     DACC_DACC_WPMR_WriteProtectEnable                               @ Enable write protect DACC
 
-    @ Enable write protect DACC
-    CallSub     DACC_DACC_WPMR_WriteProtectEnable
-
+    @ Enable interrupts
+    NVIC_SetupInterrupts
     pop         { pc }                                                          @ Restore return address and return to caller
 
 @ Start main application
@@ -62,21 +67,20 @@ main:
     .global     main
     .type       main, %function    
 
-@    CallSub     DACC_DACC_CDR_Convert, (((0x1000 | 0x000) << 16) | ((0x0000 | 0x000) << 0))
-
 main_init:
 
 main_loop:
 
-    UpdateVariable  DACC_CH0_DATA, 0x0FFF
-    UpdateVariable  DACC_CH1_DATA, 0x0000
-    CallSub     DACC_DACC_CDR_Convert
-    CallSub     DelayBlocking, 1000
+@    UpdateVariable  DACC_CH0_DATA, 0x0FFF
+@    UpdateVariable  DACC_CH1_DATA, 0x0000
+@    CallSub     DACC_DACC_CDR_Convert
+@    CallSub     DelayBlocking, 1000
 
-    UpdateVariable  DACC_CH0_DATA, 0x0000
-    UpdateVariable  DACC_CH1_DATA, 0x0FFF
-    CallSub     DACC_DACC_CDR_Convert
-    CallSub     DelayBlocking, 1000
+@    UpdateVariable  DACC_CH0_DATA, 0x0000
+@    UpdateVariable  DACC_CH1_DATA, 0x0FFF
+@    CallSub     DACC_DACC_CDR_Convert
+@    CallSub     DelayBlocking, 1000
     b           main_loop                                                       @ Final state
 
+    .align
     .end

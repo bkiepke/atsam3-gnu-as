@@ -4,24 +4,32 @@
     .thumb
 
     .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+    @.include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/pdc.inc"
 
-    @ Macros
-@    .macro Macro_ , label, value, flag
-@\label:
-@    .global     \label
-@    .type       \label, %function
-@    push        { lr }
-@    SetValueWO      PMC_CKGR_MOR, \value
-@    VerifyFlagSet   PMC_PMC_SR, \flag
-@    pop         { pc }
-@    .endm
-
+    @ Variables in RAM of subsystem
     .section .data
+    
+    @ Single access
     .global DACC_CH0_DATA
     DACC_CH0_DATA: .space 2 @ Reserve 2 bytes
     .global DACC_CH1_DATA
     DACC_CH1_DATA: .space 2 @ Reserve 2 bytes
+
+    @ DMA-based access
+    @ Note: The DACC provides two channels, so the buffer may contain tagged values.
+    @       Therefore values within buffer need to have the following structure, including the channel tag:
+    @           0x0<value channel 1>0<value channel 1>  -> channel 1 is used only
+    @       or  0x1<value channel 2>0<value channel 1>  -> channel 1 and channel 2 is used
+    @       or  0x0<value channel 1>1<value channel 2>  -> channel 1 and channel 2 is used
+    @       or  0x1<value channel 2>1<value channel 2>  -> channel 2 is used only
+    @       <value channel 2> in the range [000..FFF]
+    @       <value channel 1> in the range [000..FFF]
+    @
+    .global DACC_DMA_DATA_POINTER
+    DACC_DMA_DATA_POINTER: .space 4 @ Reserve 4 bytes for address of data
+    .global DACC_DMA_DATA_AMOUNT
+    DACC_DMA_DATA_AMOUNT: .space 2 @ Reserve 2 bytes for amount of data
 
     .section .text, "ax"
 
@@ -40,6 +48,14 @@
     .equ        DACC_DACC_ACR, (DACC_BASE + 0x0094)                             @ Address to register Analog Current Register
     .equ        DACC_DACC_WPMR, (DACC_BASE + 0x00E4)                            @ Address to register Write Protect Mode Register
     .equ        DACC_DACC_WPSR, (DACC_BASE + 0x00E8)                            @ Address to register Write Protect Status Register
+
+    @ Register addresses of DACC PDC (DACC Peripheral direct memory access controller)
+    .equ        DACC_PDC_PERIPH_TPR, (DACC_BASE + 0x0108)                       @ Address to register Transmit Pointer Register
+    .equ        DACC_PDC_PERIPH_TCR, (DACC_BASE + 0x010C)                       @ Address to register Transmit Counter Register
+    .equ        DACC_PDC_PERIPH_TNPR, (DACC_BASE + 0x0118)                      @ Address to register Transmit Next Pointer Register
+    .equ        DACC_PDC_PERIPH_TNCR, (DACC_BASE + 0x011C)                      @ Address to register Transmit Next Counter Register
+    .equ        DACC_PDC_PERIPH_PTCR, (DACC_BASE + 0x0120)                      @ Address to register Transfer Control Register
+    .equ        DACC_PDC_PERIPH_PTSR, (DACC_BASE + 0x0124)                      @ Address to register Transfer Status Register
 
     @ Register DACC_CR, write-only
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 | 00
@@ -205,7 +221,7 @@ DACC_DACC_CHER_Enable:
     .equ        DACC_DACC_CDR_DATA_CH0, 0x0000                                  @ select channel 0
     .equ        DACC_DACC_CDR_DATA_CH1, 0x1000                                  @ select channel 1
 
-    .equ        DACC_DACC_CDR_DATA_MASK, 0x3FFF0FFF                             @ value range [000...FFF]
+    .equ        DACC_DACC_CDR_DATA_MASK, 0x0FFF0FFF                             @ value range [000...FFF]
     .equ        DACC_DACC_CDR_DATA_CHANNELS, 0x10000000
 
 DACC_DACC_CDR_Convert:
@@ -249,6 +265,18 @@ DACC_DACC_CDR_Convert:
     .equ        DACC_DACC_IxR_EOC, 1
     .equ        DACC_DACC_IxR_ENDTX, 2
     .equ        DACC_DACC_IxR_TXBUFE, 3
+DACC_DACC_IER_Enable:
+    .global     DACC_DACC_IER_Enable
+    .type       DACC_DACC_IER_Enable, %function
+    push        { lr }
+    RegisterSetValueWO  DACC_DACC_IER, (1 << DACC_DACC_IxR_ENDTX)
+    pop         { pc }
+
+DACC_IRQHandler:
+    .global     DACC_IRQHandler
+    .type       DACC_IRQHandler, %function    
+    @b           .
+    bx          lr
 
     @ Register DACC_ACR, read-write
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 | 09 08        | 07 06 05 04 | 03 02    | 01 00
@@ -295,5 +323,67 @@ DACC_DACC_WPMR_WriteProtectDisable:
     @
     .equ        DACC_DACC_WPSR_WPROTERR, 0
     .equ        DACC_DACC_WPSR_WPROTADDR, 8
+
+
+    @ Register PERIPH_TPR, read-write
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ TXPTR
+    @
+    @ TXPTR : transfer buffer address
+    @
+
+    @ Register PERIPH_TCR, read-write
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | TXCTR
+    @
+    @ TXCTR : 0 = Stops peripheral data transfer to the transmitter
+    @       : 1..65535 = Starts peripheral data transfer if corresponding channel is active
+    @
+
+DACC_PDC_PERIPH_TPR_Start:
+    .global     DACC_PDC_PERIPH_TPR_Set
+    .type       DACC_PDC_PERIPH_TPR_Set, %function
+    push        { r0-r1, lr }
+    ldr         r0, =DACC_DMA_DATA_POINTER
+    ldr         r1, [r0]
+    ldr         r0, =DACC_PDC_PERIPH_TPR
+    str         r1, [r0]
+    ldr         r0, =DACC_DMA_DATA_AMOUNT
+    ldr         r1, [r0]
+    ldr         r0, =DACC_PDC_PERIPH_TCR
+    str         r1, [r0]
+    RegisterSetValueWO  DACC_PDC_PERIPH_PTCR, PERIPH_PTCR_TXTEN
+    pop         { r0-r1, lr }
+
+    .equ        DACC_PDC_PERIPH_TPR, (DACC_BASE + 0x0108)                       @ Address to register Transmit Pointer Register
+    .equ        DACC_PDC_PERIPH_TCR, (DACC_BASE + 0x010C)                       @ Address to register Transmit Counter Register
+    .equ        DACC_PDC_PERIPH_TNPR, (DACC_BASE + 0x0118)                      @ Address to register Transmit Next Pointer Register
+    .equ        DACC_PDC_PERIPH_TNCR, (DACC_BASE + 0x011C)                      @ Address to register Transmit Next Counter Register
+    .equ        DACC_PDC_PERIPH_PTCR, (DACC_BASE + 0x0120)                      @ Address to register Transfer Control Register
+    .equ        DACC_PDC_PERIPH_PTSR, (DACC_BASE + 0x0124)                      @ Address to register Transfer Status Register
+
+
+    @ Register PERIPH_PTCR, write-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 | 09      | 08    | 07 06 05 04 03 02 | 01      | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | TXTDIS  | TXTEN | -  -  -  -  -  -  | RXTDIS  | RXTEN
+    @
+    @ RXTEN : 0 = No effect.
+    @       : 1 = Enables PDC receiver channel requests if RXTDIS is not set.
+    @
+    @ RXTDIS : 0 = No effect.
+    @        : 1 = Disables PDC receiver channel requests.
+    @
+    @ TXTEN : 0 = No effect.
+    @       : 1 = Enables the PDC transmitter channel requests.
+    @
+    @ TXTDIS : 0 = No effect.
+    @        : 1 = Disables the PDC transmitter channel requests.
+    @
+    .equ        DACC_PDC_PERIPH_PTCR_RXTEN, 0x00000001
+    .equ        DACC_PDC_PERIPH_PTCR_RXTDIS, 0x00000002
+    .equ        DACC_PDC_PERIPH_PTCR_TXTEN, 0x00000010
+    .equ        DACC_PDC_PERIPH_PTCR_TXTDIS, 0x00000020
+
+    .align
 
     .end

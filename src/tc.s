@@ -334,3 +334,236 @@ TC_TC_BCR_Sync:
     @
     @ CPCSTOP : 0 = counter clock is not stopped when counter reaches RC.
     @         : 1 = counter clock is stopped when counter reaches RC.
+    @
+    @ CPCDIS : 0 = counter clock is not disabled when counter reaches RC.
+    @        : 1 = counter clock is disabled when counter reaches RC.
+    @
+    @ EEVTEDG : 0 = None
+    @         : 1 = Rising edge
+    @         : 2 = Falling edge
+    @         : 3 = Each edge
+    @
+    @ EEVT : 0 = TIOB signal selected as external event, input.
+    @      : 1 = XC0 signal selected as external event, output.
+    @      : 2 = XC1 signal selected as external event, output.
+    @      : 3 = XC2 signal selected as external event, output.
+    @
+    @ ENETRG : 0 = the external event has no effect on the counter and its clock. In this case, the selected external event only controls the TIOA output.
+    @        : 1 = the external event resets the counter and starts the counter clock.
+    @
+    @ WAVSEL : 0 = UP mode without automatic trigger on RC Compare
+    @        : 1 = UPDOWN mode without automatic trigger on RC Compare
+    @        : 2 = UP mode with automatic trigger on RC Compare
+    @        : 3 = UPDOWN mode with automatic trigger on RC Compare
+    @
+    @ WAVE : 0 = Waveform Mode is disabled (Capture Mode is enabled)
+    @      : 1 = Waveform Mode is enabled.
+    @
+    @ ACPA : 0 = None
+    @      : 1 = Set
+    @      : 2 = Clear
+    @      : 3 = Toggle
+    @
+    @ ACPC : 0 = None
+    @      : 1 = Set
+    @      : 2 = Clear
+    @      : 3 = Toggle
+    @
+    @ AEEVT : 0 = None
+    @       : 1 = Set
+    @       : 2 = Clear
+    @       : 3 = Toggle
+    @
+    @ ASWTRG : 0 = None
+    @        : 1 = Set
+    @        : 2 = Clear
+    @        : 3 = Toggle
+    @
+    @ BCPB : 0 = None
+    @      : 1 = Set
+    @      : 2 = Clear
+    @      : 3 = Toggle
+    @
+    @ BCPC : 0 = None
+    @      : 1 = Set
+    @      : 2 = Clear
+    @      : 3 = Toggle
+    @
+    @ BEEVT : 0 = None
+    @       : 1 = Set
+    @       : 2 = Clear
+    @       : 3 = Toggle
+    @
+    @ BSWTRG : 0 = None
+    @        : 1 = Set
+    @        : 2 = Clear
+    @        : 3 = Toggle
+    @
+
+    @ Register TC_SMMRx, read-write
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 | 01   | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | DOWN | GCEN
+    @
+    @ GCEN : 0 = TIOAx and TIOBx are driven by internal counter of channel x.
+    @      : 1 = TIOAx and TIOBx are driven by a 2-bit gray counter.
+    @
+    @ DOWN : 0 = Up counter.
+    @      : 1 = Down counter.
+    @
+
+    @ Register TC_CVx, read-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ CV
+    @
+    @ CV contains the counter value in real time.
+    @
+
+    @ Register TC_RAx, read-only if WAVE = 0, read-write if WAVE = 1
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ RA
+    @
+    @ RA contains the register A value in real time.
+    @
+
+    @ Register TC_RBx, read-only if WAVE = 0, read-write if WAVE = 1
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ RB
+    @
+    @ RB contains the register B value in real time.
+    @
+
+    @ Register TC_RCx, read-only if WAVE = 0, read-write if WAVE = 1
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    @ RC
+    @
+    @ RC contains the register C value in real time.
+    @
+
+    @ Register TC_SRx, read-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 | 18    | 17    | 16     | 15 14 13 12 11 10 09 08 | 07    | 06    | 05    | 04   | 03   | 02   | 01    | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  | MTIOB | MTIOA | CLKSTA | -  -  -  -  -  -  -  -  | ETRGS | LDRBS | LDRAS | CPCS | CPBS | CPAS | LOVRS | COVFS
+    @
+    @ COVFS : 0 = no counter overflow has occurred since the last read of the status register.
+    @       : 1 = a counter overflow has occurred since the last read of the status register.
+    @
+    @ LOVRS : 0 = load overrun has not occurred since the last read of the status register or WAVE = 1.
+    @       : 1 = RA or RB have been loaded at least twice without any read of the corresponding register since the last read of the status register, if WAVE = 0.
+    @
+    @ CPAS : 0 = RA Compare has not occurred since the last read of the status register or WAVE = 0.
+    @      : 1 = RA Compare has occurred since the last read of the status register, if WAVE = 1.
+    @
+    @ CPBS : 0 = RB Compare has not occurred since the last read of the status register or WAVE = 0.
+    @      : 1 = RB Compare has occurred since the last read of the status register, if WAVE = 1.
+    @
+    @ CPCS : 0 = RC Compare has not occurred since the last read of the status register or WAVE = 0.
+    @      : 1 = RC Compare has occurred since the last read of the status register, if WAVE = 1.
+    @
+    @ LDRAS : 0 = RA Load has not occurred since the last read of the status register or WAVE = 0.
+    @       : 1 = RA Load has occurred since the last read of the status register, if WAVE = 1.
+    @
+    @ LDRBS : 0 = RB Load has not occurred since the last read of the status register or WAVE = 0.
+    @       : 1 = RB Load has occurred since the last read of the status register, if WAVE = 1.
+    @
+    @ ETRGS : 0 = external trigger has not occurred since the last read of the status register.
+    @       : 1 = external trigger has occurred since the last read of the status register.
+    @
+    @ CLKSTA : 0 = clock is disabled.
+    @        : 1 = clock is enabled.
+    @
+    @ MTIOA : 0 = TIOA is low. If WAVE = 0, this means that TIOA pin is low. If WAVE = 1, this means that TIOA is driven low.
+    @       : 1 = TIOA is high. If WAVE = 0, this means that TIOA pin is high. If WAVE = 1, this means that TIOA is driven high.
+    @
+    @ MTIOB : 0 = TIOB is low. If WAVE = 0, this means that TIOB pin is low. If WAVE = 1, this means that TIOB is driven low.
+    @       : 1 = TIOB is high. If WAVE = 0, this means that TIOB pin is high. If WAVE = 1, this means that TIOB is driven high.
+    @
+
+    @ Register TC_IERx, write-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 | 07    | 06    | 05    | 04   | 03   | 02   | 01    | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | ETRGS | LDRBS | LDRAS | CPCS | CPBS | CPAS | LOVRS | COVFS
+    @
+    @ COVFS : 0 = no effect.
+    @       : 1 = enables the counter overflow interrupt.
+    @
+    @ LOVRS : 0 = no effect.
+    @       : 1 = enables the load overrun interrupt.
+    @
+    @ CPAS : 0 = no effect.
+    @      : 1 = enables the RA compare interrupt.
+    @
+    @ CPBS : 0 = no effect.
+    @      : 1 = enables the RB compare interrupt.
+    @
+    @ CPCS : 0 = no effect.
+    @      : 1 = enables the RC compare interrupt.
+    @
+    @ LDRAS : 0 = no effect.
+    @       : 1 = enables the RA load interrupt.
+    @
+    @ LDRBS : 0 = no effect.
+    @       : 1 = enables the RB load interrupt.
+    @
+    @ ETRGS : 0 = no effect.
+    @       : 1 = enables the external trigger interrupt.
+    @
+
+    @ Register TC_IDRx, write-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 | 07    | 06    | 05    | 04   | 03   | 02   | 01    | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | ETRGS | LDRBS | LDRAS | CPCS | CPBS | CPAS | LOVRS | COVFS
+    @
+    @ COVFS : 0 = no effect.
+    @       : 1 = disables the counter overflow interrupt.
+    @
+    @ LOVRS : 0 = no effect.
+    @       : 1 = disables the load overrun interrupt, if WAVE = 0.
+    @
+    @ CPAS : 0 = no effect.
+    @      : 1 = disables the RA compare interrupt, if WAVE = 1.
+    @
+    @ CPBS : 0 = no effect.
+    @      : 1 = disables the RB compare interrupt, if WAVE = 1.
+    @
+    @ CPCS : 0 = no effect.
+    @      : 1 = disables the RC compare interrupt.
+    @
+    @ LDRAS : 0 = no effect.
+    @       : 1 = disables the RA load interrupt, if WAVE = 0.
+    @
+    @ LDRBS : 0 = no effect.
+    @       : 1 = disables the RB load interrupt, if WAVE = 0.
+    @
+    @ ETRGS : 0 = no effect.
+    @       : 1 = disables the external trigger interrupt.
+    @
+
+    @ Register TC_IMRx, read-only
+    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 | 07    | 06    | 05    | 04   | 03   | 02   | 01    | 00
+    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | ETRGS | LDRBS | LDRAS | CPCS | CPBS | CPAS | LOVRS | COVFS
+    @
+    @ COVFS : 0 = the counter overflow interrupt is disabled.
+    @       : 1 = the counter overflow interrupt is enabled.
+    @
+    @ LOVRS : 0 = the load overrun interrupt is disabled.
+    @       : 1 = the load overrun interrupt is enabled.
+    @
+    @ CPAS : 0 = the RA compare interrupt is disabled.
+    @      : 1 = the RA compare interrupt is enabled.
+    @
+    @ CPBS : 0 = the RB compare interrupt is disabled.
+    @      : 1 = the RB compare interrupt is enabled.
+    @
+    @ CPCS : 0 = the RC compare interrupt is disabled.
+    @      : 1 = the RC compare interrupt is enabled.
+    @
+    @ LDRAS : 0 = the RA load interrupt is disabled.
+    @       : 1 = the RA load interrupt is enabled.
+    @
+    @ LDRBS : 0 = the RB load interrupt is disabled.
+    @       : 1 = the RB load interrupt is enabled.
+    @
+    @ ETRGS : 0 = the external trigger interrupt is disabled.
+    @       : 1 = the external trigger interrupt is enabled.
+    @
+
+    .align
+
+    .end

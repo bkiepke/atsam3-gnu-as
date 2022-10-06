@@ -3,11 +3,13 @@
     .arch armv7-m
     .thumb
 
+    .section .text, "ax"
 @
 @ Utilities functions
 @
 
     @ Delay for some cycles
+    @ r0 : contains the amount of cycles to block for delay, will be decremented until zero
 DelayBlocking:
     .global     DelayBlocking
     .type       DelayBlocking, %function
@@ -17,14 +19,7 @@ DelayBlockingLoop:
     bne         DelayBlockingLoop
     pop         { pc }
 
+    .align
+
     .end
-
-
-@@@@@@@
-
-WDT_WDT_MR_Disable:
-    .global     WDT_WDT_MR_Disable
-    .type       WDT_WDT_MR_Disable, %function
-    push        { r0-r1, lr }
-    RegisterSetValueWO  WDT_WDT_MR, (1 << WDT_WDT_MR_WDDIS)
-    pop         { r0-r1, pc }
+    

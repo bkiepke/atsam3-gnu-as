@@ -133,207 +133,248 @@ Reset_Handler:
 @ Dummy Exception Handlers (infinite loops which can be modified)
 NMI_Handler:     
     .global     NMI_Handler
+    .weak       NMI_Handler
     .type       NMI_Handler, %function
     b           .
 
 HardFault_Handler:
     .global     HardFault_Handler
+    .weak       HardFault_Handler
     .type       HardFault_Handler, %function
     b           .
 
 MemManage_Handler:
     .global     MemManage_Handler
+    .weak       MemManage_Handler
     .type       MemManage_Handler, %function
     b           .
 
 BusFault_Handler:
     .global     BusFault_Handler
+    .weak       BusFault_Handler
     .type       BusFault_Handler, %function
     b           .
 
 UsageFault_Handler:
     .global     UsageFault_Handler
+    .weak       UsageFault_Handler
     .type       UsageFault_Handler, %function
     b           .
 
 SVC_Handler:     
     .global     SVC_Handler
+    .weak       SVC_Handler
     .type       SVC_Handler, %function    
     b           .
 
 DebugMon_Handler:
     .global     DebugMon_Handler
+    .weak       DebugMon_Handler
     .type       DebugMon_Handler, %function
     b           .
 
 PendSV_Handler:  
     .global     PendSV_Handler
+    .weak       PendSV_Handler
     .type       PendSV_Handler, %function    
     b           .
 
 SysTick_Handler:
     .global     SysTick_Handler
+    .weak       SysTick_Handler
     .type       SysTick_Handler, %function    
     bx          lr
 
 @ Hardware Interrupt Handlers
 SUPC_IRQHandler:
     .global     SUPC_IRQHandler
+    .weak       SUPC_IRQHandler
     .type       SUPC_IRQHandler, %function    
     bx          lr
 
 RSTC_IRQHandler:
     .global     RSTC_IRQHandler
+    .weak       RSTC_IRQHandler
     .type       RSTC_IRQHandler, %function    
     bx          lr
     
 RTC_IRQHandler:
     .global     RTC_IRQHandler
+    .weak       RTC_IRQHandler
     .type       RTC_IRQHandler, %function    
     bx          lr
     
 RTT_IRQHandler:
     .global     RTT_IRQHandler
+    .weak       RTT_IRQHandler
     .type       RTT_IRQHandler, %function    
     bx          lr
     
 WDT_IRQHandler:
     .global     WDT_IRQHandler
+    .weak       WDT_IRQHandler
     .type       WDT_IRQHandler, %function    
     bx          lr
     
 PMC_IRQHandler:
     .global     PMC_IRQHandler
+    .weak       PMC_IRQHandler
     .type       PMC_IRQHandler, %function        
     bx          lr
     
 EEFC_IRQHandler:
     .global     EEFC_IRQHandler
+    .weak       EEFC_IRQHandler
     .type       EEFC_IRQHandler, %function        
     bx          lr
     
 UART0_IRQHandler:
     .global     UART0_IRQHandler
+    .weak       UART0_IRQHandler
     .type       UART0_IRQHandler, %function        
     bx          lr
     
 UART1_IRQHandler:
     .global     UART1_IRQHandler
+    .weak       UART1_IRQHandler
     .type       UART1_IRQHandler, %function        
     bx          lr
     
 SMC_IRQHandler:
     .global     SMC_IRQHandler
+    .weak       SMC_IRQHandler
     .type       SMC_IRQHandler, %function        
     bx          lr
     
 PIOA_IRQHandler:
     .global     PIOA_IRQHandler
+    .weak       PIOA_IRQHandler
     .type       PIOA_IRQHandler, %function        
     bx          lr
     
 PIOB_IRQHandler:
     .global     PIOB_IRQHandler
+    .weak       PIOB_IRQHandler
     .type       PIOB_IRQHandler, %function        
     bx          lr
     
 PIOC_IRQHandler:
     .global     PIOC_IRQHandler
+    .weak       PIOC_IRQHandler
     .type       PIOC_IRQHandler, %function        
     bx          lr
     
 USART0_IRQHandler:
     .global     USART0_IRQHandler
+    .weak       USART0_IRQHandler
     .type       USART0_IRQHandler, %function        
     bx          lr
 
 USART1_IRQHandler:
     .global     USART1_IRQHandler
+    .weak       USART1_IRQHandler
     .type       USART1_IRQHandler, %function    
     bx          lr
     
 HSMCI_IRQHandler:
     .global     HSMCI_IRQHandler
+    .weak       HSMCI_IRQHandler
     .type       HSMCI_IRQHandler, %function        
     bx          lr
     
 TWI0_IRQHandler:
     .global     TWI0_IRQHandler
+    .weak       TWI0_IRQHandler
     .type       TWI0_IRQHandler, %function        
     bx          lr
     
 TWI1_IRQHandler:
     .global     TWI1_IRQHandler
+    .weak       TWI1_IRQHandler
     .type       TWI1_IRQHandler, %function        
     bx          lr
     
 SPI_IRQHandler:
     .global     SPI_IRQHandler
+    .weak       SPI_IRQHandler
     .type       SPI_IRQHandler, %function        
     bx          lr
     
 SSC_IRQHandler:
     .global     SSC_IRQHandler
+    .weak       SSC_IRQHandler
     .type       SSC_IRQHandler, %function        
     bx          lr
     
 TC0_IRQHandler:
     .global     TC0_IRQHandler
+    .weak       TC0_IRQHandler
     .type       TC0_IRQHandler, %function        
     bx          lr
     
 TC1_IRQHandler:
     .global     TC1_IRQHandler
+    .weak       TC1_IRQHandler
     .type       TC1_IRQHandler, %function        
     bx          lr
     
 TC2_IRQHandler:
     .global     TC2_IRQHandler
+    .weak       TC2_IRQHandler
     .type       TC2_IRQHandler, %function        
     bx          lr
     
 TC3_IRQHandler:
     .global     TC3_IRQHandler
+    .weak       TC3_IRQHandler
     .type       TC3_IRQHandler, %function        
     bx          lr
     
 TC4_IRQHandler:
     .global     TC4_IRQHandler
+    .weak       TC4_IRQHandler
     .type       TC4_IRQHandler, %function        
     bx          lr
     
 TC5_IRQHandler:
     .global     TC5_IRQHandler
+    .weak       TC5_IRQHandler
     .type       TC5_IRQHandler, %function    
     bx          lr
     
 ADC_IRQHandler:
     .global     ADC_IRQHandler
+    .weak       ADC_IRQHandler
     .type       ADC_IRQHandler, %function    
     bx          lr
     
 DACC_IRQHandler:
     .global     DACC_IRQHandler
+    .weak       DACC_IRQHandler
     .type       DACC_IRQHandler, %function    
     bx          lr
     
 PWM_IRQHandler:
     .global     PWM_IRQHandler
+    .weak       PWM_IRQHandler
     .type       PWM_IRQHandler, %function        
     bx          lr
     
 CRCCU_IRQHandler:
     .global     CRCCU_IRQHandler
+    .weak       CRCCU_IRQHandler
     .type       CRCCU_IRQHandler, %function        
     bx          lr
     
 ACC_IRQHandler:
     .global     ACC_IRQHandler
+    .weak       ACC_IRQHandler
     .type       ACC_IRQHandler, %function        
     bx          lr
     
 UDP_IRQHandler:
     .global     UDP_IRQHandler
+    .weak       UDP_IRQHandler
     .type       UDP_IRQHandler, %function        
     bx          lr
     

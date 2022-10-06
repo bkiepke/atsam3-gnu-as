@@ -472,4 +472,6 @@
     Macro_PIOB_SwitchToA    PIOB_SwitchToNPCS1, PIOx_P14
     Macro_PIOB_SwitchToB    PIOB_SwitchToPWMH3, PIOx_P14
 
+    .align
+
     .end

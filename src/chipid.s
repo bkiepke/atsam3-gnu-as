@@ -7,7 +7,7 @@
     .arch armv7-m
     .thumb
 
-@    .section .text, "ax"
+    .section .text, "ax"
     
     @ Chip-IDs of families
     .equ        ATSAM3S1A, 0x28890560
@@ -44,5 +44,7 @@ CHIPID_CIDR_Get:
     push        { lr }
     RegisterGetValue CHIPID_CIDR
     pop         { pc }
+
+    .align
 
     .end
