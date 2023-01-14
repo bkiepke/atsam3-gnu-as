@@ -3,9 +3,9 @@
     .arch armv7-m
     .thumb
 
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/interrupts.inc"
+    .include "./macros.inc"
+    .include "./peripheral.inc"
+    .include "./interrupts.inc"
 
     .section .text, "ax"
 
@@ -86,11 +86,11 @@ NVIC_InterruptEnable:
     .global     NVIC_InterruptEnable
     .type       NVIC_InterruptEnable, %function
     push        { lr }
-    str         r1, [r3]                                                        @ Disable interrupt of NVIC in case it was enabled
-    str         r1, [r4]                                                        @ Clear pending interrupt of NVIC
-    str         r2, [r5]                                                        @ Set priority of interrupt
+    str.w       r0, [r3]                                                        @ Disable interrupt of NVIC in case it was enabled
+    str.w       r0, [r4]                                                        @ Clear pending interrupt of NVIC
+    str.w       r1, [r5]                                                        @ Set priority of interrupt    
     blx         r6                                                              @ Enable interrupts of subsystem
-    str         r1, [r2]                                                        @ Enable interrupt of subsystem of NVIC
+    str.w       r0, [r2]                                                        @ Enable interrupt of subsystem of NVIC
     pop         { pc }
 
     .align

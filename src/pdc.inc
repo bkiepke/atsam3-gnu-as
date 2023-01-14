@@ -17,10 +17,10 @@
     @ TXTDIS : 0 = No effect.
     @        : 1 = Disables the PDC transmitter channel requests.
     @
-    .equ        PERIPH_PTCR_RXTEN, 0x00000001
-    .equ        PERIPH_PTCR_RXTDIS, 0x00000002
-    .equ        PERIPH_PTCR_TXTEN, 0x00000010
-    .equ        PERIPH_PTCR_TXTDIS, 0x00000020
+    .equ        PERIPH_PTCR_RXTEN, (1 << 0)
+    .equ        PERIPH_PTCR_RXTDIS, (1 << 1)
+    .equ        PERIPH_PTCR_TXTEN, (1 << 8)
+    .equ        PERIPH_PTCR_TXTDIS, (1 << 9)
     
     @ Register PERIPH_PTSR, read-only
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 | 08    | 07 06 05 04 03 02 01 | 00
@@ -32,8 +32,8 @@
     @ TXTEN : 0 = PDC transmitter channel requests are disabled.
     @       : 1 = PDC transmitter channel requests are enabled.
     @
-    .equ        PERIPH_PTCR_RXTEN, 0x00000001
-    .equ        PERIPH_PTCR_TXTEN, 0x00000010
+    .equ        PERIPH_PTSR_RXTEN, (1 << 0)
+    .equ        PERIPH_PTSR_TXTEN, (1 << 8)
 
 
  

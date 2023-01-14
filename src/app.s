@@ -1,12 +1,26 @@
 @ import macros and definitions    
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/interrupts.inc"
+    .include "./macros.inc"
+    .include "./peripheral.inc"
+    .include "./interrupts.inc"
 
     .syntax unified
     .cpu cortex-m3
     .arch armv7-m
     .thumb
+
+    @ Variables in RAM of subsystem
+    .section .data
+    
+    @ DACC function values
+    DACC_FUNC_000: .hword   0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF, 0x0FFF
+    DACC_FUNC_001: .hword   0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF, 0x07FF
+    DACC_FUNC_002: .hword   0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF, 0x03FF
+    DACC_FUNC_003: .hword   0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF, 0x01FF
+    DACC_FUNC_004: .hword   0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+    @ DACC function amount
+    DACC_AMOUNT: .byte  .-DACC_FUNC_004
+    
+    .align
 
     .section .text, "ax"
 
@@ -59,7 +73,7 @@ SystemInit:
     CallSub     DACC_DACC_WPMR_WriteProtectEnable                               @ Enable write protect DACC
 
     @ Enable interrupts
-    NVIC_SetupInterrupts
+    @NVIC_SetupInterrupts
     pop         { pc }                                                          @ Restore return address and return to caller
 
 @ Start main application
@@ -68,6 +82,16 @@ main:
     .type       main, %function    
 
 main_init:
+
+    ldr         r0, =DACC_DMA_DATA_AMOUNT
+    ldr         r1, =DACC_AMOUNT
+    str         r1, [r0]
+
+    ldr         r0, =DACC_DMA_DATA_POINTER
+    ldr         r1, =DACC_FUNC_004
+    str         r1, [r0]
+
+@    CallSub     DACC_PDC_PERIPH_TPR_Trigger
 
 main_loop:
 
@@ -79,7 +103,10 @@ main_loop:
 @    UpdateVariable  DACC_CH0_DATA, 0x0000
 @    UpdateVariable  DACC_CH1_DATA, 0x0FFF
 @    CallSub     DACC_DACC_CDR_Convert
-@    CallSub     DelayBlocking, 1000
+    CallSub     DelayBlocking, 1000
+
+    CallSub DACC_PDC_PERIPH_TPR_Trigger
+
     b           main_loop                                                       @ Final state
 
     .align

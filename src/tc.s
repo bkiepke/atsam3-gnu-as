@@ -3,8 +3,8 @@
     .arch armv7-m
     .thumb
 
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+    .include "./macros.inc"
+    .include "./peripheral.inc"
 
     @ Register addresses of TC
     .equ        TC0_TC0_BASE, 0x40010000                                        @ Base register address

@@ -6,9 +6,22 @@
     .global UpdateVariable
     .macro  UpdateVariable, variable:req, value:req
     push    { r0-r1 }
-    ldr r0, =\variable
-    ldr r1, =\value
-    str r1, [r0]
+    ldr     r0, =\variable
+    ldr     r1, =\value
+    str     r1, [r0]
+    pop     { r0-r1 }
+    .endm
+
+@
+@ Macro to update register by RAM variable
+@
+    .global UpdateRegisterByRAM
+    .macro  UpdateRegisterByRAM variable:req, register:req
+    push    { r0-r1 }
+    ldr     r0, =\variable
+    ldr     r1, [r0]
+    ldr     r0, =\register
+    str     r1, [r0]
     pop     { r0-r1 }
     .endm
 

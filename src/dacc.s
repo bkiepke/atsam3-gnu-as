@@ -3,9 +3,9 @@
     .arch armv7-m
     .thumb
 
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    @.include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/pdc.inc"
+    .include "./macros.inc"
+    @.include "./peripheral.inc"
+    .include "./pdc.inc"
 
     @ Variables in RAM of subsystem
     .section .data
@@ -231,6 +231,7 @@ DACC_DACC_CDR_Convert:
     .global     DACC_DACC_CDR_Convert
     .type       DACC_DACC_CDR_Convert, %function
     push        { r0-r2, lr }
+    RegisterVerifyFlagIsSet DACC_DACC_ISR, DACC_DACC_IxR_TXRDY
     ldr         r0, =DACC_CH1_DATA
     ldr         r1, [r0]
     lsl         r1, r1, #DACC_DACC_CDR_DATA_HWTH
@@ -261,22 +262,39 @@ DACC_DACC_CDR_Convert:
     @ TXBUFE : 0 = No effect.
     @        : 1 = Transmit Buffer Empty Interrupt.
     @
-    .equ        DACC_DACC_IxR_TXRDY, 0
-    .equ        DACC_DACC_IxR_EOC, 1
-    .equ        DACC_DACC_IxR_ENDTX, 2
-    .equ        DACC_DACC_IxR_TXBUFE, 3
+    .equ        DACC_DACC_IxR_TXRDY, 1
+    .equ        DACC_DACC_IxR_EOC, 2
+    .equ        DACC_DACC_IxR_ENDTX, 4
+    .equ        DACC_DACC_IxR_TXBUFE, 8
 DACC_DACC_IER_Enable:
     .global     DACC_DACC_IER_Enable
     .type       DACC_DACC_IER_Enable, %function
     push        { lr }
-    RegisterSetValueWO  DACC_DACC_IER, (1 << DACC_DACC_IxR_ENDTX)
+    RegisterSetValueWO  DACC_DACC_IER, DACC_DACC_IxR_ENDTX
     pop         { pc }
 
-DACC_IRQHandler:
-    .global     DACC_IRQHandler
-    .type       DACC_IRQHandler, %function    
-    @b           .
-    bx          lr
+@DACC_IRQHandler:
+@    .global     DACC_IRQHandler
+@    .type       DACC_IRQHandler, %function
+@    ldr         r0, =DACC_DACC_ISR
+@    tst         r0, #DACC_DACC_IxR_ENDTX
+@    bne         DACC_IRQHandler_End
+ @DACC_IRQHandler_TXRDY:
+    @ Has the transmit ready interrupt TXRDY fired?
+
+@DACC_IRQHandler_EOC:
+    @ Has the end of conversion interrupt EOC fired?
+    @ Readint the DACC_ISR register clears the EOC bit
+
+@DACC_IRQHandler_ENDTX:
+    @ Has the end of transmit buffer interrupt ENDTX fired?
+@    CallSub     DACC_PDC_PERIPH_TPR_Start
+
+@DACC_IRQHandler_TXBUFE:
+    @ Has the transmit buffer empty interrupt TXBUFE fired?
+
+@DACC_IRQHandler_End:
+@    bx          lr
 
     @ Register DACC_ACR, read-write
     @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 | 09 08        | 07 06 05 04 | 03 02    | 01 00
@@ -341,48 +359,25 @@ DACC_DACC_WPMR_WriteProtectDisable:
     @
 
 DACC_PDC_PERIPH_TPR_Start:
-    .global     DACC_PDC_PERIPH_TPR_Set
-    .type       DACC_PDC_PERIPH_TPR_Set, %function
+    .global     DACC_PDC_PERIPH_TPR_Start
+    .type       DACC_PDC_PERIPH_TPR_Start, %function
     push        { r0-r1, lr }
-    ldr         r0, =DACC_DMA_DATA_POINTER
-    ldr         r1, [r0]
-    ldr         r0, =DACC_PDC_PERIPH_TPR
-    str         r1, [r0]
-    ldr         r0, =DACC_DMA_DATA_AMOUNT
-    ldr         r1, [r0]
-    ldr         r0, =DACC_PDC_PERIPH_TCR
-    str         r1, [r0]
+    UpdateRegisterByRAM DACC_DMA_DATA_POINTER, DACC_PDC_PERIPH_TPR
+    UpdateRegisterByRAM DACC_DMA_DATA_AMOUNT, DACC_PDC_PERIPH_TCR
+    UpdateRegisterByRAM DACC_DMA_DATA_POINTER, DACC_PDC_PERIPH_TNPR
+    UpdateRegisterByRAM DACC_DMA_DATA_AMOUNT, DACC_PDC_PERIPH_TNCR
     RegisterSetValueWO  DACC_PDC_PERIPH_PTCR, PERIPH_PTCR_TXTEN
-    pop         { r0-r1, lr }
+    RegisterVerifyFlagIsSet DACC_PDC_PERIPH_PTSR, PERIPH_PTSR_TXTEN
+    pop         { r0-r1, pc }
 
-    .equ        DACC_PDC_PERIPH_TPR, (DACC_BASE + 0x0108)                       @ Address to register Transmit Pointer Register
-    .equ        DACC_PDC_PERIPH_TCR, (DACC_BASE + 0x010C)                       @ Address to register Transmit Counter Register
-    .equ        DACC_PDC_PERIPH_TNPR, (DACC_BASE + 0x0118)                      @ Address to register Transmit Next Pointer Register
-    .equ        DACC_PDC_PERIPH_TNCR, (DACC_BASE + 0x011C)                      @ Address to register Transmit Next Counter Register
-    .equ        DACC_PDC_PERIPH_PTCR, (DACC_BASE + 0x0120)                      @ Address to register Transfer Control Register
-    .equ        DACC_PDC_PERIPH_PTSR, (DACC_BASE + 0x0124)                      @ Address to register Transfer Status Register
+DACC_PDC_PERIPH_TPR_Trigger:
+    .global     DACC_PDC_PERIPH_TPR_Trigger
+    .type       DACC_PDC_PERIPH_TPR_Trigger, %function
+    push        { lr }
+    RegisterVerifyFlagIsSet DACC_DACC_ISR, DACC_DACC_IxR_ENDTX
+    CallSub     DACC_PDC_PERIPH_TPR_Start
+    pop         { pc }
 
-
-    @ Register PERIPH_PTCR, write-only
-    @ 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 | 09      | 08    | 07 06 05 04 03 02 | 01      | 00
-    @ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  | TXTDIS  | TXTEN | -  -  -  -  -  -  | RXTDIS  | RXTEN
-    @
-    @ RXTEN : 0 = No effect.
-    @       : 1 = Enables PDC receiver channel requests if RXTDIS is not set.
-    @
-    @ RXTDIS : 0 = No effect.
-    @        : 1 = Disables PDC receiver channel requests.
-    @
-    @ TXTEN : 0 = No effect.
-    @       : 1 = Enables the PDC transmitter channel requests.
-    @
-    @ TXTDIS : 0 = No effect.
-    @        : 1 = Disables the PDC transmitter channel requests.
-    @
-    .equ        DACC_PDC_PERIPH_PTCR_RXTEN, 0x00000001
-    .equ        DACC_PDC_PERIPH_PTCR_RXTDIS, 0x00000002
-    .equ        DACC_PDC_PERIPH_PTCR_TXTEN, 0x00000010
-    .equ        DACC_PDC_PERIPH_PTCR_TXTDIS, 0x00000020
 
     .align
 

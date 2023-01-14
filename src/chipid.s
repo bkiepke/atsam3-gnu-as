@@ -1,6 +1,6 @@
 @ import macros and definitions    
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/macros.inc"
-    .include "/home/benny/Projekte_lokal/02_Coding/01_arm/gnu_as_test/src/peripheral.inc"
+    .include "./macros.inc"
+    .include "./peripheral.inc"
 
     .syntax unified
     .cpu cortex-m3
